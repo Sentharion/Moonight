@@ -5,7 +5,7 @@ const TopBar = () => {
     <header className="mt-1 bg-[#0a0a14]">
       <div className="mx-auto flex  max-w-3xl items-center gap-3 px-4 sm:px-22 py-3 sm:max-w-2xl sm:py-2">
         
-        <div className="glitch font-russo text-[22px] tracking-wider text-neon-pink glow-pink sm:text-[16px]!">
+        <div className="glitch font-russo text-[22px] tracking-wider font-light text-neon-pink glow-pink sm:text-[16px]!">
           MOONIGHT 
         </div>
 
