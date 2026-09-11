@@ -1,4 +1,4 @@
-# Moonnight, a movies night planner
+# Moonnight, a movie nights planner
 ## Getting Started
 
 First, run the development server:
