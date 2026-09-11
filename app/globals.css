@@ -1,8 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Russo+One&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700&family=Share+Tech+Mono&display=swap");
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #080810;
 }
 
 @theme inline {
@@ -10,11 +10,20 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-neon-blue: #00e5ff;
+  --color-neon-pink:#ff2d78;
+  --color-neon-lime:#b8ff00;
+  --color-neon-purple:#bf5fff;
+  --font-russo: "Russo One", sans-serif;
+  --font-barlow: "Barlow", sans-serif;
+  --font-barlow-condensed: "Barlow Condensed", sans-serif;
+  --font-tech: "Share Tech Mono", monospace;
+  
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #080810;
     --foreground: #ededed;
   }
 }
@@ -22,5 +31,97 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Barlow', system-ui, sans-serif;
+  font-weight: 600;
 }
+
+.glow-pink {
+  text-shadow:
+    0 0 10px var(--color-neon-pink),
+    0 0 30px color-mix(in srgb, var(--color-neon-pink) 40%, transparent);
+}
+
+.glow-blue {
+  text-shadow:
+    0 0 10px var(--color-neon-blue),
+    0 0 30px color-mix(in srgb, var(--color-neon-blue) 40%, transparent);
+}
+
+.glow-lime {
+  text-shadow:
+    0 0 8px var(--color-neon-lime),
+    0 0 24px color-mix(in srgb, var(--color-neon-lime) 33%, transparent);
+}
+
+.border-neon-pink {
+  border-color: var(--color-neon-pink);
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--color-neon-pink) 25%, transparent),
+    inset 0 0 12px color-mix(in srgb, var(--color-neon-pink) 3%, transparent);
+}
+
+.border-neon-blue {
+  border-color: var(--color-neon-blue);
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--color-neon-blue) 25%, transparent),
+    inset 0 0 12px color-mix(in srgb, var(--color-neon-blue) 3%, transparent);
+}
+
+.vhs-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+
+/*Animacje*/
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes glitch {
+  0%, 92%, 100% { clip-path: none; transform: none; }
+  93% { clip-path: polygon(0 20%, 100% 20%, 100% 25%, 0 25%); transform: translateX(-4px); }
+  94% { clip-path: polygon(0 60%, 100% 60%, 100% 62%, 0 62%); transform: translateX(4px); }
+  95% { clip-path: none; transform: none; }
+}
+
+@keyframes neon-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  49% { opacity: 1; }
+  50% { opacity: 0; }
+  99% { opacity: 0; }
+}
+
+
+
+.scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+}
+
+.glitch { animation: glitch 6s infinite; }
+.neon-pulse { animation: neon-pulse 3s ease-in-out infinite; }
+.blink { animation: blink 1.2s step-end infinite; }
