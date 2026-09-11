@@ -11,7 +11,7 @@ const Ticker = ({ titles }: { titles: string[] }) => {
         {repeated.map((t, i) => (
           <span
             key={i}
-            className="vhs-badge mx-6 text-[9px]! sm:text-[8px]! text-neon-pink/60"
+            className="vhs-badge mx-6 text-[11px]! sm:text-[8px]! text-neon-pink/60"
           >
             ▶ {t}
           </span>
