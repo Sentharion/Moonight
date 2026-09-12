@@ -31,8 +31,9 @@ export default function Home() {
         ▶ Zaplanuj wieczór filmowy
       </button>
 
-      <div className="vhs-badge text-[#1e1e38]">
-        CREATED BY SENTHARION
+      <div className="flex flex-col gap-2 vhs-badge text-[#9e9eb6] text-[10px] sm:text-[12px]">
+        <div>CREATED BY <span className="text-neon-pink">SENTHARION</span></div>
+        <div className="text-[#5a5a75]">This product uses the TMDB API but is not endorsed or certified by TMDB.</div>
       </div>
 
     </div>
