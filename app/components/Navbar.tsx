@@ -1,60 +1,8 @@
 "use client"
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
-import {CirclePlus,CalendarPlus,DiamondIcon,User,Vote,UserPlus} from "lucide-react"
+import {PreTabs, Tabs,type Tab} from "@/app/constant"
 
-const PreTabs = [
-    {
-        id:1,
-        label:'Przegląd',
-        path:'/',
-        icon:<DiamondIcon className="size-4" />
-    },
-    {
-        id:2,
-        label:'Dołącz',
-        path:'/join',
-        icon:<CalendarPlus  className="size-4"/>
-        },
-        {
-            id:3,
-            label:'Stwórz',
-            path:'/create',
-            icon:<CirclePlus className="size-4"/>
-        },
-        {
-            id:4,
-            label:'Profil',
-            path:'/profile',
-            icon:<User className="size-4"/>
-        }
-    ]
-    const Tabs = [
-        {
-            id:1,
-            label:'Przegląd',
-            path:'/[room]/lineup',
-            icon:<DiamondIcon className="size-4" />
-        },
-        {
-            id:2,
-            label:'Głosuj',
-            path:'/vote',
-            icon:<Vote className="size-4"/>
-        },
-        {
-            id:3,
-            label:'Zaproś',
-            path:'/[room]/invite',
-            icon:<UserPlus className="size-4"/>
-        },
-        {
-            id:4,
-            label:'Profil',
-            path:'/profile',
-            icon:<User className="size-4"/>
-        }
-    ]
 
 const NavBar = ()=>{
     const pathname = usePathname();
@@ -65,7 +13,7 @@ const NavBar = ()=>{
 
     return(
         <nav className="hidden sm:flex sm:justify-center max-w-2xl mx-auto w-full px-4 pt-4 gap-2">
-            {currentTabs.map((item) => {
+            {currentTabs.map((item:Tab) => {
                 const resolvedPath = item.path.replace('[room]', room || '');
                 const isActive = pathname === resolvedPath;
                 return (

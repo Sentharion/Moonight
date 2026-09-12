@@ -27,7 +27,7 @@ export default function Home() {
         </div>
       </div>
 
-      <button className="rounded-sm border-2 cursor-pointer uppercase hover:scale-115 transition-all duration-100 border-neon-pink bg-neon-pink/[0.07] px-4 py-3 sm:px-8 sm:py-4 font-russo text-[16px] tracking-[0.08em] text-neon-pink shadow-[0_0_24px_#ff2d7840,inset_0_0_20px_#ff2d7808] active:scale-95">
+      <button className="rounded-sm border-2 cursor-pointer uppercase hover:scale-115 transition-all duration-100 border-neon-pink bg-neon-pink/[0.07] px-4 py-3.5 sm:px-8 sm:py-4 font-russo text-[16px] tracking-[0.08em] text-neon-pink shadow-[0_0_24px_#ff2d7840,inset_0_0_20px_#ff2d7808] active:scale-95">
         ▶ Zaplanuj wieczór filmowy
       </button>
 
