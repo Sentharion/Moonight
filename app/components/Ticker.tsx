@@ -6,12 +6,12 @@ const Ticker = ({ titles }: { titles: string[] }) => {
   const repeated = [...half, ...half];
 
   return (
-    <div className="overflow-hidden border-t-2 border-t-neon-pink border-b border-neon-pink/25 bg-neon-pink/[0.02] py-2 sm:py-1">
+    <div className="overflow-hidden border-t-2 border-t-neon-pink border-b border-neon-pink/25 bg-neon-pink/2 py-2 sm:py-2">
       <div className="flex w-max animate-[ticker_40s_linear_infinite] whitespace-nowrap">
         {repeated.map((t, i) => (
           <span
             key={i}
-            className="vhs-badge mx-6 text-[11px]! sm:text-[8px]! text-neon-pink/60"
+            className="vhs-badge mx-6 text-[11px]! sm:text-[12px]! text-neon-pink/60"
           >
             ▶ {t}
           </span>
