@@ -9,7 +9,7 @@ export const PreTabs: Tab[] = [
     {
         id: 1,
         label: 'Przegląd',
-        path: '/',
+        path: '/dashboard',
         icon: <DiamondIcon className="size-4" />
     },
     {

@@ -1,7 +1,9 @@
 "use client"
 import { useState } from "react";
 import { Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
 const ProfilePage = () => {
+    const router = useRouter();
     const [draft, setDraft] = useState("");
     const [profileName, setProfileName] = useState("");
     const [profileEditing, setProfileEditing] = useState(false);
@@ -89,12 +91,12 @@ const ProfilePage = () => {
                     </div>
                 )}
 
-                <div className="vhs-badge text-[#555580]">
+                <div className="vhs-badge text-text-light">
                     {eventHost === (profileName || eventHost) ? "HOST" : "CREW MEMBER"} ·{" "}
                     {eventName.toUpperCase()}
                 </div>
             </div>
-            <button onClick={() => { }} className="w-full cursor-pointer rounded-sm border border-[#ff2d7840] bg-transparent py-3.5 font-russo_one text-[13px] tracking-[0.08em] text-text-light transition-all duration-200 hover:border-neon-pink hover:text-neon-pink uppercase">⏏ Wyloguj się</button>
+            <button onClick={() => { router.push('/')}} className="w-full cursor-pointer rounded-sm border border-[#ff2d7840] bg-transparent py-3.5 font-russo_one text-[13px] tracking-[0.08em] text-text-light transition-all duration-200 hover:border-neon-pink hover:text-neon-pink uppercase">⏏ Wyloguj się</button>
         </div>
     );
 }

@@ -10,7 +10,7 @@ const MobileNavbar = () =>{
 
     const currentTabs = room ? Tabs : PreTabs;
     return(
-       <nav className="fixed bottom-0 left-0 right-0 z-50 flex border-t-2 border-neon-pink bg-[#0a0a14] shadow-[0_-4px_24px_#ff2d7820] sm:hidden">
+       <nav className={`fixed bottom-0 left-0 right-0 z-50 flex border-t-2 border-neon-pink bg-[#0a0a14] shadow-[0_-4px_24px_#ff2d7820] sm:hidden ${pathname === "/" ? "hidden" : "flex"}`}>
         {currentTabs.map((item: Tab) => {
             const active = pathname === item.path;
                 return (
