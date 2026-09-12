@@ -29,7 +29,7 @@ const MobileNavbar = () =>{
                 </Link>
             );
         })}
-        </nav>
+       </nav>
     )
 }
 export default MobileNavbar
