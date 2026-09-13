@@ -60,12 +60,6 @@ const MoviePropositions = () => {
                                     <span className={`font-['Barlow_Condensed'] text-[15px] font-bold ${isVoted ? "text-neon-pink" : "text-text-light"}`}>
                                         {p.title}
                                     </span>
-
-                                    {p.year && (
-                                        <span className="vhs-badge text-text-light">
-                                            {p.year}
-                                        </span>
-                                    )}
                                 </div>
 
                                 <div className="vhs-badge mt-0.5 text-[#333360]">
