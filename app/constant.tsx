@@ -35,27 +35,21 @@ export const Tabs: Tab[] = [
     {
         id: 1,
         label: 'Przegląd',
-        path: '/[room]/lineup',
+        path: '/room/[inviteCode]',
         icon: <DiamondIcon className="size-4" />
     },
     {
         id: 2,
         label: 'Głosuj',
-        path: '/vote',
+        path: '/room/[inviteCode]/vote',
         icon: <Vote className="size-4" />
     },
     {
         id: 3,
         label: 'Zaproś',
-        path: '/[room]/invite',
+        path: '/room/[inviteCode]/invite',
         icon: <UserPlus className="size-4" />
     },
-    {
-        id: 4,
-        label: 'Profil',
-        path: '/profile',
-        icon: <User className="size-4" />
-    }
 ]
 
 export interface MovieRoom {
@@ -65,14 +59,14 @@ export interface MovieRoom {
     inviteCode: string,
     createdAt: string,
     hostId: string,
+    selectedDateId: string | null
 }
 
 export interface User {
     id: string,
     username: string,
-    avatar: string,
+    avatar?: string,
     createdAt: Date,
-    updatedAt: Date,
 }
 
 export interface MovieRoomParticipant {
@@ -88,7 +82,7 @@ export interface MovieProposal {
     movieId: string,
     title: string,
     posterUrl: string
-    updatedAt: Date,
+    createdAt: string;
 }
 
 export interface DateProposal {
@@ -97,7 +91,6 @@ export interface DateProposal {
     proposedBy: string,
     date: string,
     createdAt: string,
-    updatedAt: string,
 }
 
 export interface MovieVote {
@@ -113,3 +106,136 @@ export interface DateVote {
     userId: string;
     createdAt: Date;
 }
+
+export interface SelectedMovie {
+    roomId: string;
+    movieProposalId: string;
+    position: number;
+}
+
+const roomSampleData: MovieRoom = {
+    id: "1",
+    title: "Piątkowy wieczór",
+    venue: "U Krzysia",
+    inviteCode: "123456",
+    createdAt: "2022-01-01",
+    hostId: "1",
+    selectedDateId: null,
+}
+
+const userSampleData: User = {
+    id: "1",
+    username: "Krzysiu",
+    createdAt: new Date(),
+}
+
+export interface MovieRoomPreviewData extends MovieRoom {
+    host: User;
+    selectedDate: DateProposal | null;
+    selectedMovies: SelectedMovie[];
+    crew: MovieRoomParticipant[];
+    leading: MovieProposal;
+}
+
+/* Typy do JOIN */
+
+export interface MovieRoomWithHost extends MovieRoom {
+    host: User;
+}
+
+export interface MovieProposalWithUser extends MovieProposal {
+    proposer: User;
+}
+
+export interface DateProposalWithUser extends DateProposal {
+    proposer: User;
+}
+
+export interface MovieRoomDetails extends MovieRoom {
+    host: User;
+    participants: MovieRoomParticipant[];
+    movieProposals: MovieProposalWithUser[];
+    dateProposals: DateProposalWithUser[];
+    selectedMovies: SelectedMovie[];
+}
+
+/* Forumlarze */
+
+export interface RegisterForm {
+    username: string;
+    password: string;
+    confirmPassword: string;
+}
+
+export interface LoginForm {
+    username: string;
+    password: string;
+}
+
+export const moviesSampleData: MovieProposal[] = [
+    {
+        id: "1",
+        roomId: "1",
+        proposedBy: "1",
+        movieId: "1",
+        title: "Incepcja",
+        posterUrl: "https://image.tmdb.org/t/p/w500/86c5eSly9fJ23mD6lF7M9b1m5l0.jpg",
+        createdAt: "2022-01-01",
+    }
+]
+
+
+export const roomsSampleData: MovieRoomPreviewData[] = [
+    {
+        id: "1",
+        title: "PIĄTKOWY SEANS",
+        venue: "Mieszkanie",
+        inviteCode: "ABC123",
+        hostId: "user-1",
+        selectedDateId: null,
+        createdAt: "2026-09-12T18:00:00Z",
+
+        host: {
+            id: "user-1",
+            username: "Michał",
+            avatar: "avatar-1",
+            createdAt: new Date()
+        },
+        crew: [
+            {
+                roomId: "1",
+                userId: "user-1",
+                role: "host"
+            },
+            {
+                roomId: "1",
+                userId: "user-2",
+                role: "participant"
+            },
+            {
+                roomId: "1",
+                userId: "user-3",
+                role: "participant"
+            }
+        ],
+        selectedDate: null,
+
+        selectedMovies: [
+            {
+                roomId: "1",
+                movieProposalId: "1",
+                position: 1,
+            }
+        ],
+
+        leading: {
+            id: "1",
+            roomId: "1",
+            proposedBy: "user-2",
+            movieId: '123',
+            title: "Interstellar",
+            posterUrl: "/interstellar.jpg",
+            createdAt: "2026-09-12T18:00:00Z",
+        },
+    },
+];
