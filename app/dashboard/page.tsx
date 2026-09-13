@@ -5,7 +5,7 @@ import Link from "next/link"
 
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 pt-32 text-center sm:pb-0">
+    <div className="flex flex-1 flex-col items-center justify-start gap-8 px-6 pt-32 text-center sm:pb-0">
       {
         roomsSampleData.length > 0 ? (
           <div className="flex flex-col w-full max-w-2xl sm:max-w-150 -translate-y-25">

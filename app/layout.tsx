@@ -1,4 +1,3 @@
-
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -31,8 +30,8 @@ export default function RootLayout({
       lang="pl" 
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-       <div className="scanlines">
+      <body className="min-h-screen flex flex-1 flex-col">
+       <div className="scanlines flex flex-col h-full">
         <TopBar />
         <NavBar />
         {children}

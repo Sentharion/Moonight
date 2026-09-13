@@ -81,7 +81,8 @@ export interface MovieProposal {
     proposedBy: string,
     movieId: string,
     title: string,
-    posterUrl: string
+    year:string,
+    posterUrl?: string
     createdAt: string;
 }
 
@@ -113,21 +114,6 @@ export interface SelectedMovie {
     position: number;
 }
 
-const roomSampleData: MovieRoom = {
-    id: "1",
-    title: "Piątkowy wieczór",
-    venue: "U Krzysia",
-    inviteCode: "123456",
-    createdAt: "2022-01-01",
-    hostId: "1",
-    selectedDateId: null,
-}
-
-const userSampleData: User = {
-    id: "1",
-    username: "Krzysiu",
-    createdAt: new Date(),
-}
 
 export interface MovieRoomPreviewData extends MovieRoom {
     host: User;
@@ -145,10 +131,13 @@ export interface MovieRoomWithHost extends MovieRoom {
 
 export interface MovieProposalWithUser extends MovieProposal {
     proposer: User;
+    votes: number;
+    year: string;
 }
 
 export interface DateProposalWithUser extends DateProposal {
     proposer: User;
+    votes: number;
 }
 
 export interface MovieRoomDetails extends MovieRoom {
@@ -179,6 +168,7 @@ export const moviesSampleData: MovieProposal[] = [
         proposedBy: "1",
         movieId: "1",
         title: "Incepcja",
+        year:"2010",
         posterUrl: "https://image.tmdb.org/t/p/w500/86c5eSly9fJ23mD6lF7M9b1m5l0.jpg",
         createdAt: "2022-01-01",
     }
@@ -234,8 +224,124 @@ export const roomsSampleData: MovieRoomPreviewData[] = [
             proposedBy: "user-2",
             movieId: '123',
             title: "Interstellar",
+            year:"2014",
             posterUrl: "/interstellar.jpg",
             createdAt: "2026-09-12T18:00:00Z",
         },
     },
 ];
+
+
+export const propositionsSampleData: MovieProposalWithUser[] = [
+  {
+    id: "1",
+    roomId: "1",
+    movieId: "1",
+    title: "Blade Runner 2049",
+    year: '2017',
+    proposedBy: "Host",
+    createdAt: "2026-09-12T18:00:00Z",
+    votes: 5,
+    proposer: {
+        id: "user-1",
+        username: "Host",
+        avatar: "avatar-1",
+        createdAt: new Date()
+    }
+  },
+  {
+    id:"2",
+    roomId: "1",
+    movieId: "2",
+    title: "Drive",
+    year: '2011',
+    proposedBy: "Crew",
+    createdAt: "2026-09-12T18:00:00Z",
+    votes: 3,
+    proposer: {
+        id: "user-2",
+        username: "Crew",
+        avatar: "avatar-2",
+        createdAt: new Date()
+    }
+  },
+  {
+    id: "3",
+    roomId: "1",
+    movieId: "3",
+    title: "Akira",
+    year: '1988',
+    proposedBy: "Crew",
+    createdAt: "2026-09-12T18:00:00Z",
+    votes: 2,
+    proposer: {
+        id: "user-3",
+        username: "Crew",
+        avatar: "avatar-3",
+        createdAt: new Date()
+    }
+  },
+];
+
+export const dateSampleData: DateProposalWithUser[] = [
+    {
+        id: "1",
+        roomId: "1",
+        proposedBy: "Host",
+        date: "2022-01-01",
+        createdAt: "2022-01-01",
+        votes: 5,
+        proposer: {
+            id: "user-1",
+            username: "Host",
+            avatar: "avatar-1",
+            createdAt: new Date()
+        }
+    },
+    {
+        id: "2",
+        roomId: "1",
+        proposedBy: "Crew",
+        date: "2022-01-01",
+        createdAt: "2022-01-01",
+        votes: 3,
+        proposer: {
+            id: "user-2",
+            username: "Crew",
+            avatar: "avatar-2",
+            createdAt: new Date()
+        }
+    },
+    {
+        id: "3",
+        roomId: "1",
+        proposedBy: "Crew",
+        date: "2022-01-01",
+        createdAt: "2022-01-01",
+        votes: 2,
+        proposer: {
+            id: "user-3",
+            username: "Crew",
+            avatar: "avatar-3",
+            createdAt: new Date()
+        }
+    },
+];
+
+export const crewSampleData: User[] = [
+    {
+        id: "1",
+        username: "Krzysiu",
+        createdAt: new Date(),
+    },
+    {
+        id: "2",
+        username: "Gosia",
+        createdAt: new Date(),
+    },
+    {
+        id: "3",
+        username: "Ania",
+        createdAt: new Date(),
+    },
+]

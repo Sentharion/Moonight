@@ -26,25 +26,25 @@ const HubPoster = ({ room, host, crew, leading }: HubPosterProps) => {
                     ▶ Następny seans
                 </div>
 
-                <div className="font-['Russo_One'] text-[24px] tracking-[0.04em] text-white">
+                <div className="font-['Russo_One'] text-[20px]! sm:text-[24px]! tracking-[0.04em] text-white">
                     {room.title?.toUpperCase()}
                 </div>
 
                 <div className="mt-2 flex flex-wrap gap-4">
-                    <span className="uppercase vhs-badge text-neon-blue">
+                    <span className="uppercase vhs-badge text-[10px]! sm:text-[12px]! text-neon-blue">
                         📅 DATA TBD — GŁOSOWANIE
                     </span>
 
-                    <span className="uppercase vhs-badge text-neon-lime">
+                    <span className="uppercase vhs-badge text-[10px]! sm:text-[12px]! text-neon-lime">
                         👥 {crew?.length} ZAPROSZONYCH
                     </span>
 
-                    <span className="uppercase vhs-badge text-text-light">
+                    <span className="uppercase vhs-badge text-[10px]! sm:text-[12px]! text-text-light">
                         🎬 HOST: {host.username.toUpperCase()}
                     </span>
 
                     {room.venue && (
-                        <span className="vhs-badge text-text-light">
+                        <span className="vhs-badge text-[10px]! sm:text-[12px]! text-text-light">
                             📍 {room.venue.toUpperCase()}
                         </span>
                     )}

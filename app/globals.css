@@ -125,3 +125,22 @@ body {
 .glitch { animation: glitch 6s infinite; }
 .neon-pulse { animation: neon-pulse 3s ease-in-out infinite; }
 .blink { animation: blink 1.2s step-end infinite; }
+
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080810;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ff2d78;
+  box-shadow: 0 0 6px #ff2d78;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00e5ff;
+  box-shadow: 0 0 8px #00e5ff;
+}
