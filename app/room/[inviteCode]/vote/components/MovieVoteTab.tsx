@@ -86,7 +86,7 @@ const Votes = () => {
                         <button onClick={() => setShowPropForm(!showPropForm)} className={`vhs-badge cursor-pointer rounded-sm border px-2.5 py-1 transition-all ${showPropForm ? "border-neon-lime/35 bg-neon-lime/10 text-neon-lime hover:bg-neon-lime/15" : "border-neon-lime/35 bg-transparent text-neon-lime hover:bg-neon-lime/10"}`}>
                         {showPropForm ? "✕ ANULUJ" : "+ DODAJ"}
                         </button>
-                        <button onClick={toggleDeleteMode} className={`vhs-badge rounded-sm border cursor-pointer border-red-500/40 bg-red-500/10 px-2.5 py-1 text-red-500 transition hover:bg-red-500/20`}>
+                        <button onClick={toggleDeleteMode} className={`vhs-badge rounded-sm border cursor-pointer border-red-500/40 px-2.5 py-1 text-red-500 transition hover:bg-red-500/20`}>
                             ✕ Usuń
                         </button>
                    </div>

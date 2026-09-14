@@ -243,7 +243,7 @@ export const roomsSampleData: MovieRoomPreviewData[] = [
             movieId: '123',
             title: "Interstellar",
             year:"2014",
-            posterUrl: "/interstellar.jpg",
+            posterUrl: "https://skomplikowane.pl/wp-content/uploads/2015/04/47313-interstellar_wallpaper-990x619.jpg",
             createdAt: "2026-09-12T18:00:00Z",
         },
     },
