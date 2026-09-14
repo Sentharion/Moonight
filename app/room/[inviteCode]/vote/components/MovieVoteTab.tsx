@@ -71,7 +71,7 @@ const Votes = () => {
                 <div className="vhs-badge mt-1 text-text-light">
                     {moviesSampleData.length === 0
                         ? "Nie wybrano żadnych filmów - dodaj jeden poniżej"
-                        : "Zagłosuj na film"}
+                        : "Zagłosuj na film który objerzmy"}
                 </div>
             </div>
 
