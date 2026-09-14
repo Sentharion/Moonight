@@ -22,11 +22,18 @@ const Votes = () => {
 
     const handleVote = (id: string) => {
         if(deleteMode) return;
+        const alreadyVoted = votedProp.includes(id);
         setVotedProp((prev) =>
-            prev.includes(id)
+            alreadyVoted
             ? prev.filter((v) => v !== id)
             : [...prev, id]
         );
+
+        setPropositions((prev) => prev.map((p) => 
+        p.id === id
+        ? { ...p, votes: alreadyVoted ? p.votes - 1 : p.votes + 1}
+        : p
+        ));
     };
 
     const toggleDeleteMode = () => {
@@ -53,6 +60,7 @@ const Votes = () => {
        setSelectedMovie(null);
        setPropBy("");
        setShowPropForm(false);
+       
     };
 
     const deleteProposition = (id: string) => {

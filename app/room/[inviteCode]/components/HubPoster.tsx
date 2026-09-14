@@ -14,7 +14,7 @@ const HubPoster = ({ room, host, crew, leading }: HubPosterProps) => {
         <div className="relative h-50 overflow-hidden rounded-sm border-2 border-neon-pink shadow-[0_0_24px_#ff2d7830,inset_0_0_24px_#ff2d7808]">
             {leading?.posterUrl ? (
             <>
-                <Image src={leading.posterUrl} alt="poster" width={400} height={600} quality={90} className="absolute inset-0 h-full w-full object-cover object-[center_20%] brightness-[0.35] saturate-[1.6]"/>
+                <Image src={leading.posterUrl} alt="poster" width={400} height={600} quality={90} className="absolute inset-0 h-full w-full object-cover object-[center_10%] brightness-[0.35] saturate-[1.6]"/>
                 <div className="absolute inset-0 bg-[linear-gradient(135deg,#ff2d7815,#00e5ff08)]" />
             </>
             ) : (
