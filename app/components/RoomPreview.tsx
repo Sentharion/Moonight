@@ -30,7 +30,7 @@ const RoomPreview = ({ room, host, selectedDate, selectedMovies }: RoomPreviewPr
 
             <div className="mt-1.5 flex gap-3">
                 <span className={`vhs-badge ${selectedMovies.length > 0 ? "text-neon-blue" : "text-[#333360]"}`}>
-                    🎬 {selectedMovies.length} filmy
+                    🎬 {selectedMovies.length} {selectedMovies.length === 1 ? "film" : selectedMovies.length === 2 || selectedMovies.length === 3 || selectedMovies.length === 4 ? "filmy" : "filmów"}
                 </span>
 
                 <span className={`vhs-badge ${selectedDate ? "text-neon-blue" : "text-[#333360]"}`}>

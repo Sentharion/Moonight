@@ -1,21 +1,14 @@
-import { DateProposalWithUser, dateSampleData } from "../../../constant";
+import { DateProposalWithUser} from "../../../constant";
+import Bar from "./Bar";
+import Link from "next/link";
 
 interface DatePropositionsProps {
     dates: DateProposalWithUser[];
+    inviteCode:string;
+    activeTab?:string;
 }
 
-function Bar({ val, max, color }: { val: number; max: number; color: string }) {
-  return (
-    <div className="h-1.5 rounded-sm overflow-hidden" style={{ background: "#1e1e38" }}>
-      <div
-        className="h-full rounded-sm transition-all duration-700"
-        style={{ width: `${Math.round((val / (max + 2)) * 100)}%`, background: color, boxShadow: `0 0 6px ${color}` }}
-      />
-    </div>
-  );
-}
-
-const DatePropositions = ({dates}: DatePropositionsProps) => {
+const DatePropositions = ({dates,inviteCode,activeTab}: DatePropositionsProps) => {
 
     const maxDateProp = dates.length > 0 ? Math.max(...dates.map((d) => d.votes)) : 0;
 
@@ -26,9 +19,9 @@ const DatePropositions = ({dates}: DatePropositionsProps) => {
                     Kiedy?
                 </span>
 
-                <button className="vhs-badge cursor-pointer uppercase text-neon-pink hover:text-neon-pink/60">
+                <Link href={`/room/${inviteCode}/vote?tab=dates`}className="vhs-badge cursor-pointer uppercase text-neon-pink hover:text-neon-pink/60">
                     {dates.length === 0 ? "PROPOZYCJA →" : "GŁOSUJ →"}
-                </button>
+                </Link>
             </div>
 
             {dates.length === 0 ? (
