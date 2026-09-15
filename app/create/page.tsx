@@ -6,7 +6,6 @@ const CreatePage = () => {
     const [canLaunch, setCanLaunch] = useState(false);
     const [name, setName] = useState("");
     const [venue, setVenue] = useState("");
-    const [profileName, setProfileName] = useState("");
 
     return (
         <div className="flex min-h-full p-2 flex-col bg-[#080810]">
@@ -39,7 +38,7 @@ const CreatePage = () => {
                     },
                 ].map((f) => (
                     <div key={f.label}>
-                        <div className="vhs-badge mb-2 text-[#00e5ff]">
+                        <div className="vhs-badge mb-2 text-neon-blue">
                             {f.label}
                         </div>
 
