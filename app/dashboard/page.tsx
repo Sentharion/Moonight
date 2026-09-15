@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { roomsSampleData } from "../constant"
 import RoomPreview from "../components/RoomPreview"
 import Link from "next/link"

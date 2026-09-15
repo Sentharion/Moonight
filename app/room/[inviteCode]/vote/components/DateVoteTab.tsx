@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DateProposalWithUser, dateSampleData } from "../../../../constant";
 import Bar from "../../components/Bar";
 import DatePicker from "./DatePicker";

@@ -74,7 +74,7 @@ const DatePicker = ({ onAddDate}: DatePickerProps) => {
                     type="time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
-                    className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-2.5 font-mono text-[13px] text-[#e8e0ff] outline-none focus:border-neon-blue/40"
+                    className="w-full rounded-sm border border-neon-blue/40 bg-[#080810] px-3 py-2.5 font-mono text-[13px] text-[#e8e0ff] outline-none focus:border-neon-blue/40"
                 />
             </div>
 

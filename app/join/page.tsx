@@ -27,15 +27,6 @@ const JoinPage = () => {
                 <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="np. neon-reel-7x2k lub pełny URL" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-mono text-[13px] text-[#e8e0ff] caret-neon-pink outline-none transition-colors placeholder:text-[#333360] focus:border-neon-pink/50"/>
                 <button disabled={!code.trim()} className={`w-full rounded-sm py-3.5 font-russo text-[14px] tracking-[0.08em] transition-all ${code.trim() ? "cursor-pointer border-2 border-neon-pink bg-neon-pink/9 text-neon-pink shadow-[0_0_16px_#ff2d7840] hover:bg-neon-pink/14 uppercase" : "cursor-not-allowed border border-[#1e1e38] bg-[#0e0e1a] text-[#333360] uppercase"}`}>▶ Dołącz</button>
             </div>
-
-            <div className="flex flex-col items-center gap-3 rounded-sm border border-dashed border-[#1e1e38] bg-[#0e0e1a] py-8">
-                <div className="text-[28px] opacity-30">
-                    📷
-                </div>
-                <div className="vhs-badge text-center text-[#333360]">
-                    SKANOWANIE QR KODU WKRÓTCE.
-                </div>
-            </div>
         </div>
     );
 }
