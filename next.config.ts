@@ -20,6 +20,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "skomplikowane.pl",
       },
+      {
+        protocol: "https",
+        hostname: "vxzsdyxbobvimeafjctx.supabase.co",
+      },
     ]
   }
 };

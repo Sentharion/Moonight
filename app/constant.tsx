@@ -81,7 +81,7 @@ export interface MovieProposal {
     proposedBy: string,
     movieId: string,
     title: string,
-    year:string,
+    year?:string,
     posterUrl?: string
     createdAt: string;
 }
@@ -132,7 +132,6 @@ export interface MovieRoomWithHost extends MovieRoom {
 export interface MovieProposalWithUser extends MovieProposal {
     proposer: User;
     votes: number;
-    year: string;
 }
 
 export interface DateProposalWithUser extends DateProposal {
