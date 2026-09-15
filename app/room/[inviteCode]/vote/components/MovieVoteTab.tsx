@@ -1,0 +1,234 @@
+"use client"
+import Bar from "../../components/Bar";
+import { moviesSampleData, MovieProposalWithUser, propositionsSampleData, ReelDBMovie } from "../../../../constant";
+import { useState } from "react";
+import Image from "next/image";
+import MoviePicker from "./MoviePicker";
+import { X } from "lucide-react";
+
+
+
+const Votes = () => {
+    const [showPropForm, setShowPropForm] = useState(false);
+    const [propBy, setPropBy] = useState("");
+    const [selectedMovie, setSelectedMovie] = useState<ReelDBMovie | null>(null);
+    const [deleteMode, setDeleteMode] = useState(false);
+
+    const [propositions, setPropositions] = useState<MovieProposalWithUser[]>(propositionsSampleData);
+
+    const [votedProp, setVotedProp] = useState<string[]>([]);
+
+    const maxProp = Math.max(...propositions.map((p) => p.votes), 0);
+
+    const handleVote = (id: string) => {
+        if(deleteMode) return;
+        const alreadyVoted = votedProp.includes(id);
+        setVotedProp((prev) =>
+            alreadyVoted
+            ? prev.filter((v) => v !== id)
+            : [...prev, id]
+        );
+
+        setPropositions((prev) => prev.map((p) => 
+        p.id === id
+        ? { ...p, votes: alreadyVoted ? p.votes - 1 : p.votes + 1}
+        : p
+        ));
+    };
+
+    const toggleDeleteMode = () => {
+        setDeleteMode(!deleteMode);
+    };
+    
+    const addProposition = () => {
+       if(!selectedMovie) return;
+
+       const newProp:MovieProposalWithUser = {
+            id: crypto.randomUUID(),
+            title: selectedMovie.Title,
+            year: selectedMovie.Year,
+            movieId: selectedMovie.imdbID,
+            roomId: "1",
+            posterUrl:selectedMovie.Poster !== "N/A" ? selectedMovie.Poster: undefined,
+            proposedBy: propBy || "Anonymous",
+            createdAt: new Date().toISOString(),
+            proposer: {} as any,
+            votes: 0,
+       }
+       setPropositions((prev) => [...prev, newProp]);
+
+       setSelectedMovie(null);
+       setPropBy("");
+       setShowPropForm(false);
+       
+    };
+
+    const deleteProposition = (id: string) => {
+        setPropositions((prev) => prev.filter((p) => p.id !== id));
+    };
+    return (
+        <section>
+            <div className="mb-4">
+                <div className="font-russo uppercase text-[20px] tracking-[0.04em] text-white">
+                    Co{" "}
+                    <span className="text-neon-lime drop-shadow-[0_0_12px_#9eff2d]">
+                      oglądamy?
+                    </span>
+                </div>
+
+                <div className="vhs-badge mt-1 text-text-light">
+                    {moviesSampleData.length === 0
+                        ? "Nie wybrano żadnych filmów - dodaj jeden poniżej"
+                        : "Zagłosuj na film który objerzmy"}
+                </div>
+            </div>
+
+            {/* Propose form */}
+            <div className="mb-4">
+                <div className="mb-2 flex items-center justify-between">
+                    <span className={`uppercase vhs-badge ${deleteMode ? "text-red-500" : "text-neon-lime"}`}>
+                        Propozycje filmów {deleteMode ? "(tryb usuwania)" : ""}
+                    </span>
+
+                   <div className="flex gap-2">
+                        <button onClick={() => setShowPropForm(!showPropForm)} className={`vhs-badge cursor-pointer rounded-sm border px-2.5 py-1 transition-all ${showPropForm ? "border-neon-lime/35 bg-neon-lime/10 text-neon-lime hover:bg-neon-lime/15" : "border-neon-lime/35 bg-transparent text-neon-lime hover:bg-neon-lime/10"}`}>
+                        {showPropForm ? "✕ ANULUJ" : "+ DODAJ"}
+                        </button>
+                        <button onClick={toggleDeleteMode} className={`vhs-badge rounded-sm border cursor-pointer border-red-500/40 px-2.5 py-1 text-red-500 transition hover:bg-red-500/20`}>
+                            ✕ Usuń
+                        </button>
+                   </div>
+                </div>
+
+                {showPropForm && (
+                    <div className="flex flex-col gap-2 rounded-sm border border-neon-lime/20 bg-[#0e0e1a] p-3">
+                        <MoviePicker onSelectMovie={(movie) => setSelectedMovie(movie)}/>
+                            {selectedMovie && (
+                                <button
+                                    type="button"
+                                    onClick={addProposition}
+                                    className="vhs-badge rounded-sm border border-neon-lime/40 bg-neon-lime/10 px-3 py-2 text-neon-lime transition hover:bg-neon-lime/20"
+                                >
+                                    + DODAJ FILM DO PROPOZYCJI
+                                </button>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            {propositions.length === 0 ? (
+                <div className="flex flex-col items-center gap-3 rounded-sm border border-dashed border-[#1e1e38] bg-[#0e0e1a] py-10">
+                    <div className="text-[32px] opacity-30">
+                        🎬
+                    </div>
+
+                    <div className="vhs-badge text-center uppercase text-[#333360]">
+                        Nie ma propozycji filmów
+                    </div>
+                </div>
+            ) : (
+                <div className="flex flex-col gap-3">
+                    {propositions.map((p) => {
+                        const picked = votedProp.includes(p.id);
+                        const leading = p.votes === maxProp && p.votes > 0;
+
+                        return (
+                            <div
+                                key={p.id}
+                                onClick={() => handleVote(p.id)}
+                                className={`w-full overflow-hidden rounded-sm text-left transition-all duration-200 ${picked ? "border-2 border-neon-lime bg-neon-lime/10 shadow-[0_0_18px_#9eff2d40]": leading && votedProp.length > 0? "border border-neon-lime/25 bg-transparent": "border border-transparent bg-transparent"} ${
+                                    deleteMode ? "cursor-default": "cursor-pointer"}`}
+                            >
+                                <div className="flex items-stretch gap-0">
+                                    {/* Poster */}
+                                    <div className="w-22.5 min-h-30 shrink-0">
+                                        {p.posterUrl ? (
+                                            <Image
+                                                src={p.posterUrl}
+                                                alt={p.title}
+                                                className="block h-full min-h-30 w-22.5 object-cover"
+                                                width={110}
+                                                height={160}
+                                                quality={90}
+                                            />
+                                        ) : (
+                                            <div className="flex min-h-30 w-22.5 items-center justify-center border-r border-[#1e1e38] bg-[#12082a]">
+                                                <span className={`font-russo text-[28px] ${picked ? "text-neon-lime/40": "text-neon-lime/20"}`}>
+                                                    {p.title.slice(0, 1).toUpperCase()}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="flex-1 p-3">
+                                        <div className="mb-2 flex items-start justify-between gap-2">
+                                            <div>
+                                                <span className={`font-barlow-condensed text-[18px] font-bold ${picked? "text-neon-lime": "text-[#e8e0ff]"}`}>
+                                                    {p.title}
+                                                </span>
+
+                                                <div className="vhs-badge mt-0.5 text-text-light">
+                                                    proponowane przez {p.proposedBy}
+                                                </div>
+                                            </div>
+
+                                            <div className="flex shrink-0 items-center gap-1.5">
+                                                {leading && votedProp.length > 0 && (
+                                                    <span className="vhs-badge rounded-sm uppercase bg-neon-lime px-1.5 py-0.5 text-[#000]">
+                                                        Wygrywa
+                                                    </span>
+                                                )}
+
+                                                {deleteMode && (
+                                                    <button
+                                                    onClick={() => deleteProposition(p.id)}
+                                                    className="vhs-badge rounded-sm cursor-pointer border border-red-500/40 bg-red-500/10 p-1 text-red-500 transition hover:bg-red-500/20"
+                                                    > 
+                                                        <X className="size-4"/>
+                                                    </button>
+                                                )}
+
+                                                {picked && (
+                                                    <span className="text-neon-lime">
+                                                        ✓
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex-1">
+                                                <Bar
+                                                    val={p.votes}
+                                                    max={maxProp || 1}
+                                                    color={picked ? "#b8ff00" : "#2a2a50"}
+                                                />
+                                            </div>
+
+                                            <span className={`vhs-badge ${picked ? "text-neon-lime": "text-text-light"}`}>
+                                                {p.votes}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                        })}
+                        </div>
+                        )}
+
+                        {votedProp.length > 0 && (
+                        <div className="mt-4 rounded-sm border border-neon-lime/10 bg-neon-lime/5 p-3 text-center vhs-badge text-neon-lime">
+                             ZAGŁOSOWANO NA: {" "}
+                            {propositions
+                                .filter((p) => votedProp.includes(p.id))
+                                .map((p) => p.title)
+                                .join(", ")
+                                .toUpperCase()}
+                        </div>
+                        )}
+        </section>
+    );
+}
+
+export default Votes

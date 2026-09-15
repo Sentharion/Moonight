@@ -54,10 +54,6 @@ export default function Home() {
         </>
         )
       }
-      <div className="absolute bottom-20 flex flex-col sm:flex-row items-center gap-2 vhs-badge text-[10px]! sm:text-[12px]">
-        <div className="text-text-light/56">This product uses the TMDB API but is not endorsed or certified by TMDB.</div>
-        <Image alt="TMDB" src="/tmdb-logo.svg" className="opacity-50" width={30} height={30}></Image>
-      </div>
     </div>
   );
 }

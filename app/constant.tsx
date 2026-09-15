@@ -66,7 +66,7 @@ export interface User {
     id: string,
     username: string,
     avatar?: string,
-    createdAt: Date,
+    createdAt: string,
 }
 
 export interface MovieRoomParticipant {
@@ -161,6 +161,24 @@ export interface LoginForm {
     password: string;
 }
 
+export type VoteTab = "movies" | "dates";
+
+export interface MovieSearchResult {
+    id: string;
+    title: string;
+    year: number;
+    type: "movie" | "series";
+    poster: string | null;
+}
+
+export interface ReelDBMovie {
+    Title: string;
+    Year: string;
+    imdbID: string;
+    Type: "movie";
+    Poster: string;
+}
+
 export const moviesSampleData: MovieProposal[] = [
     {
         id: "1",
@@ -189,7 +207,7 @@ export const roomsSampleData: MovieRoomPreviewData[] = [
             id: "user-1",
             username: "Michał",
             avatar: "avatar-1",
-            createdAt: new Date()
+            createdAt: new Date().toISOString()
         },
         crew: [
             {
@@ -225,7 +243,7 @@ export const roomsSampleData: MovieRoomPreviewData[] = [
             movieId: '123',
             title: "Interstellar",
             year:"2014",
-            posterUrl: "/interstellar.jpg",
+            posterUrl: "https://skomplikowane.pl/wp-content/uploads/2015/04/47313-interstellar_wallpaper-990x619.jpg",
             createdAt: "2026-09-12T18:00:00Z",
         },
     },
@@ -239,6 +257,7 @@ export const propositionsSampleData: MovieProposalWithUser[] = [
     movieId: "1",
     title: "Blade Runner 2049",
     year: '2017',
+    posterUrl:"https://fwcdn.pl/fpo/07/98/630798/7801880_1.3.jpg",
     proposedBy: "Host",
     createdAt: "2026-09-12T18:00:00Z",
     votes: 5,
@@ -246,7 +265,7 @@ export const propositionsSampleData: MovieProposalWithUser[] = [
         id: "user-1",
         username: "Host",
         avatar: "avatar-1",
-        createdAt: new Date()
+        createdAt: new Date().toISOString()
     }
   },
   {
@@ -262,7 +281,7 @@ export const propositionsSampleData: MovieProposalWithUser[] = [
         id: "user-2",
         username: "Crew",
         avatar: "avatar-2",
-        createdAt: new Date()
+        createdAt: new Date().toISOString()
     }
   },
   {
@@ -278,7 +297,7 @@ export const propositionsSampleData: MovieProposalWithUser[] = [
         id: "user-3",
         username: "Crew",
         avatar: "avatar-3",
-        createdAt: new Date()
+        createdAt: new Date().toISOString()
     }
   },
 ];
@@ -295,7 +314,7 @@ export const dateSampleData: DateProposalWithUser[] = [
             id: "user-1",
             username: "Host",
             avatar: "avatar-1",
-            createdAt: new Date()
+            createdAt: new Date().toISOString()
         }
     },
     {
@@ -309,7 +328,7 @@ export const dateSampleData: DateProposalWithUser[] = [
             id: "user-2",
             username: "Crew",
             avatar: "avatar-2",
-            createdAt: new Date()
+            createdAt: new Date().toISOString()
         }
     },
     {
@@ -323,7 +342,7 @@ export const dateSampleData: DateProposalWithUser[] = [
             id: "user-3",
             username: "Crew",
             avatar: "avatar-3",
-            createdAt: new Date()
+            createdAt: new Date().toISOString()
         }
     },
 ];
@@ -332,16 +351,16 @@ export const crewSampleData: User[] = [
     {
         id: "1",
         username: "Krzysiu",
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
     },
     {
         id: "2",
         username: "Gosia",
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
     },
     {
         id: "3",
         username: "Ania",
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
     },
 ]
