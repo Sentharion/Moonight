@@ -77,11 +77,11 @@ const ProfilePage = () => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const validTypes = ["image/jpeg", "image/jpg", "image/png"];
+        const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
         const maxSize = 5 * 1024 * 1024;
 
         if (!validTypes.includes(file.type)) {
-            setError("⚠ Akceptowane formaty: JPG, PNG");
+            setError("⚠ Akceptowane formaty: JPG, PNG, WEBP");
             return;
         }
 
@@ -132,14 +132,13 @@ const ProfilePage = () => {
 
         if (avatarFile) {
 
-            const fileExt = avatarFile.name.split(".").pop()?.toLowerCase() || "jpg";
-            const filePath = `${user.id}/avatar.${fileExt}`;
+            const filePath = `${user.id}/avatar.jpg`;
 
             const { error: uploadError } = await supabase.storage
                 .from("avatars")
                 .upload(filePath, avatarFile, {
                     cacheControl: "3600",
-                    upsert: false,
+                    upsert: true,
                     contentType: avatarFile.type,
                 });
 
@@ -151,7 +150,7 @@ const ProfilePage = () => {
             }
 
             const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
-            avatarUrl = publicUrl;
+            avatarUrl = `${publicUrl}?v=${Date.now()}`;
         }
 
         const { error: updateError } = await supabase
@@ -291,7 +290,7 @@ const ProfilePage = () => {
                     </div>
                 )}
             </div>
-            <button onClick={logout} className="w-full cursor-pointer rounded-sm border border-[#ff2d7840] bg-transparent py-3.5 font-russo_one text-[13px] tracking-[0.08em] text-text-light transition-all duration-200 hover:border-neon-pink hover:text-neon-pink uppercase">⏏ Wyloguj się</button>
+            <button onClick={logout} className="w-full cursor-pointer rounded-sm border border-[#ff2d7840] bg-transparent py-3.5 font-russo text-[13px] tracking-[0.08em] text-text-light transition-all duration-200 hover:border-neon-pink hover:text-neon-pink uppercase">⏏ Wyloguj się</button>
         </div>
     );
 }
