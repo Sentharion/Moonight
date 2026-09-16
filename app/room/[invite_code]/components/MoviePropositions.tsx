@@ -27,7 +27,7 @@ const MoviePropositions = ({ movies, inviteCode }: MoviePropositionsProps) => {
             </div>
 
             {movies.length === 0 ? (
-                <div className="flex flex-col items-center gap-3 rounded-sm border border-dashed border-[#1e1e38] bg-[#0e0e1a] py-8">
+                <div className="flex flex-col items-center gap-3 rounded-sm border border-dashed border-border bg-[#0e0e1a] py-8">
                     <div className="text-[28px] opacity-30">
                         🎬
                     </div>
@@ -45,13 +45,13 @@ const MoviePropositions = ({ movies, inviteCode }: MoviePropositionsProps) => {
                         const isVoted = votedProps.includes(p.id);
 
                         return (
-                            <div key={p.id} className={`flex items-center overflow-hidden rounded-sm ${isVoted ? "border border-[#ff2d7850] bg-[#0a0018]" : isLeading ? "border border-[#ff2d7830] bg-[#0e0e1a]" : "border border-[#1e1e38] bg-[#0e0e1a]"}`}>
+                            <div key={p.id} className={`flex items-center overflow-hidden rounded-sm ${isVoted ? "border border-[#ff2d7850] bg-[#0a0018]" : isLeading ? "border border-[#ff2d7830] bg-[#0e0e1a]" : "border border-border bg-[#0e0e1a]"}`}>
                                 {/* Poster */}
                                 <div className="h-23.75 w-17.5 shrink-0">
-                                    {p.posterUrl ? (
-                                        <Image src={p.posterUrl} alt={p.title} width={110} height={150} quality={90} className="block h-23.75 w-17.5 object-cover" />
+                                    {p.poster_url ? (
+                                        <Image src={p.poster_url} alt={p.title} width={110} height={150} quality={90} className="block h-23.75 w-17.5 object-cover" />
                                     ) : (
-                                        <div className="flex h-23.75 w-17.5 items-center justify-center border-r border-[#1e1e38] bg-[#12082a]">
+                                        <div className="flex h-23.75 w-17.5 items-center justify-center border-r border-border bg-[#12082a]">
                                             <span className="font-['Russo_One'] text-[22px] text-[#ff2d7840]">
                                                 {p.title.slice(0, 1).toUpperCase()}
                                             </span>
@@ -68,7 +68,7 @@ const MoviePropositions = ({ movies, inviteCode }: MoviePropositionsProps) => {
                                     </div>
 
                                     <div className="vhs-badge mt-0.5 text-[#333360]">
-                                        propozycja: {p.proposedBy}
+                                        propozycja: {p.proposer?.username}
                                     </div>
                                 </div>
 

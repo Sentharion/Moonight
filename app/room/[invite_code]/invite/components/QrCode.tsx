@@ -5,8 +5,8 @@ import { useParams } from "next/navigation";
 
 const QrCode = () => {
     const [qrRevealed, setQrRevealed] = useState(false);
-    const { inviteCode } = useParams<{ inviteCode: string }>();
-    const joinUrl = typeof window !== "undefined" ? `${window.location.origin}/join/${inviteCode}`: "";
+    const { invite_code } = useParams<{ invite_code: string }>();
+    const joinUrl = typeof window !== "undefined" ? `${window.location.origin}/join/${invite_code}`: "";
 
     return (
         <section className="flex flex-col items-center gap-5 rounded-sm border-2 border-neon-pink/25 bg-background py-8 shadow-[0_0_30px_#ff2d7818]">

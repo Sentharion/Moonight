@@ -3,16 +3,16 @@ import { useState } from "react";
 import type {VoteTab} from "../../../constant"
 import MovieVoteTab from "./components/MovieVoteTab";
 import DateVoteTab from "./components/DateVoteTab";
-import { useSearchParams } from "next/navigation";
+import { useParams,useSearchParams } from "next/navigation";
 
 
 
 const VotePage = () => {
+    const params = useParams<{ invite_code: string }>();
     const searchParams = useSearchParams();
+    const inviteCode = params.invite_code;
     const tab = searchParams.get("tab");
-
     const activeTab = tab === "dates" ? "dates" : "movies";
-
     const [voteTab, setVoteTab] = useState<VoteTab>(activeTab);
 
     return (
@@ -22,14 +22,14 @@ const VotePage = () => {
                 ["movies", "🎬 FILMY"],
                 ["dates", "📅 TERMINY"],
             ] as [VoteTab, string][]).map(([vt, label]) => (
-            <button key={vt} onClick={() => setVoteTab(vt)} className={`py-2 rounded-sm vhs-badge transition-all cursor-pointer ${(vt === voteTab) ? (voteTab === "dates" ? "bg-neon-blue/10 border-2 border-neon-blue text-neon-blue shadow-[0_0_12px_#00e5ff40]" : "bg-neon-lime/10 border-2 border-neon-lime text-neon-lime shadow-[0_0_12px_#9eff2d40]") : "bg-[#0e0e1a] border border-[#1e1e38] text-text-light"}`}>
+            <button key={vt} onClick={() => setVoteTab(vt)} className={`py-2 rounded-sm vhs-badge transition-all cursor-pointer ${(vt === voteTab) ? (voteTab === "dates" ? "bg-neon-blue/10 border-2 border-neon-blue text-neon-blue shadow-[0_0_12px_#00e5ff40]" : "bg-neon-lime/10 border-2 border-neon-lime text-neon-lime shadow-[0_0_12px_#9eff2d40]") : "bg-[#0e0e1a] border border-border text-text-light"}`}>
                 {label}
             </button>
             ))}
             </div>
             <div className="py-2">
-                {voteTab === "movies" && <MovieVoteTab/>}
-                {voteTab === "dates" && <DateVoteTab />}
+                {voteTab === "movies" && <MovieVoteTab inviteCode={inviteCode}/>}
+                {voteTab === "dates" && <DateVoteTab  inviteCode={inviteCode} />}
             </div>
         </div>
     );
