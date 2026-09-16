@@ -14,18 +14,18 @@ const JoinPage = () => {
                 </div>
 
                 <div className="vhs-badge mt-1 text-text-light text-[10px]! sm:text-[12px]!">
-                    Wprowadź kod lub link aby dołączyć do czyjegoś wieczoru filmowego.
+                    Wprowadź kod aby dołączyć do czyjegoś wieczoru filmowego.
                 </div>
             </div>
 
             <div className="flex flex-col gap-4 rounded-sm border-2 border-neon-pink/19 bg-[#0e0e1a] p-5 shadow-[0_0_24px_#ff2d7810]">
 
                 <div className="vhs-badge text-neon-pink uppercase">
-                    ▶ Kod zaproszeniowy / LINK
+                    ▶ Kod zaproszeniowy
                 </div>
 
-                <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="np. neon-reel-7x2k lub pełny URL" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-mono text-[13px] text-[#e8e0ff] caret-neon-pink outline-none transition-colors placeholder:text-[#333360] focus:border-neon-pink/50"/>
-                <button disabled={!code.trim()} className={`w-full rounded-sm py-3.5 font-russo text-[14px] tracking-[0.08em] transition-all ${code.trim() ? "cursor-pointer border-2 border-neon-pink bg-neon-pink/9 text-neon-pink shadow-[0_0_16px_#ff2d7840] hover:bg-neon-pink/14 uppercase" : "cursor-not-allowed border border-[#1e1e38] bg-[#0e0e1a] text-[#333360] uppercase"}`}>▶ Dołącz</button>
+                <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="np. 123456" className="w-full rounded-sm border border-border bg-[#080810] px-3 py-3 font-mono text-[13px] text-[#e8e0ff] caret-neon-pink outline-none transition-colors placeholder:text-[#333360] focus:border-neon-pink/50"/>
+                <button disabled={!code.trim()} className={`w-full rounded-sm py-3.5 font-russo text-[14px] tracking-[0.08em] transition-all ${code.trim() ? "cursor-pointer border-2 border-neon-pink bg-neon-pink/9 text-neon-pink shadow-[0_0_16px_#ff2d7840] hover:bg-neon-pink/14 uppercase" : "cursor-not-allowed border border-border bg-[#0e0e1a] text-text-light uppercase"}`}>▶ Dołącz</button>
             </div>
         </div>
     );

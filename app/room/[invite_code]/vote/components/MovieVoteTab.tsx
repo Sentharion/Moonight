@@ -1,12 +1,13 @@
-"use client"
+"use client";
+
 import Bar from "../../components/Bar";
-import { MovieProposalWithUser, ReelDBMovie, User, MovieVote } from "../../../../constant";
-import { useEffect, useState } from "react";
+import { MovieProposalWithUser, ReelDBMovie, User } from "../../../../constant";
+import { useState } from "react";
 import Image from "next/image";
 import MoviePicker from "./MoviePicker";
 import { X } from "lucide-react";
 import { createClient } from "../../../../lib/supabase/client";
-
+import { useRoomData } from "../../RoomDataContext";
 
 interface MovieVoteTabProps {
     inviteCode: string;
@@ -14,164 +15,44 @@ interface MovieVoteTabProps {
 
 const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
     const supabase = createClient();
+    const {
+        loading,
+        error: contextError,
+        roomId,
+        currentUserId,
+        isHost,
+        movieProposals: propositions,
+        votedMovies: votedProp,
+        addMovieProposalState,
+        removeMovieProposalState,
+        setVotedMoviesState: setVotedProp,
+        setMovieProposalsState: setPropositions,
+    } = useRoomData();
+
     const [showPropForm, setShowPropForm] = useState(false);
-    const [propBy, setPropBy] = useState("");
     const [selectedMovie, setSelectedMovie] = useState<ReelDBMovie | null>(null);
     const [deleteMode, setDeleteMode] = useState(false);
-    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const [hostId, setHostId] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
-    const [propositions, setPropositions] = useState<MovieProposalWithUser[]>([]);
-    const [votedProp, setVotedProp] = useState<string[]>([]);
-    const [error, setError] = useState("");
-    const isHost = currentUserId !== null && hostId !== null && currentUserId === hostId;
+    const [actionError, setActionError] = useState("");
 
-    useEffect(() => {
-        const loadMovies = async () => {
-            setLoading(true);
-            setError("");
-
-            const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-            if (authError || !user) {
-                setError("⚠ Nie udało się pobrać użytkownika.");
-                setLoading(false);
-                return;
-            }
-
-            setCurrentUserId(user.id);
-
-            const { data: room, error: roomError } = await supabase.from("movie_room").select("id,host_id").eq("invite_code", inviteCode).single();
-            if (roomError || !room) {
-                console.error("Błąd przy pobieraniu pokoju:", roomError);
-                setError("⚠ Nie udało się pobrać pokoju.");
-                setLoading(false);
-                return;
-            }
-
-            setHostId(room.host_id);
-
-            const { data: movieProposals, error: movieProposalsError } = await supabase.from("movie_proposals").select(`
-                    id,
-                    room_id,
-                    proposed_by,
-                    movie_id,
-                    title,
-                    year,
-                    poster_url,
-                    created_at,
-                    users (
-                        id,
-                        username,
-                        avatar,
-                        created_at
-                    )
-                `).eq("room_id", room.id).order("created_at", { ascending: true });
-
-            if (movieProposalsError) {
-                console.error("Błąd przy pobieraniu propozycji filmów:", movieProposalsError);
-                setError("⚠ Nie udało się pobrać propozycji filmów.");
-                setLoading(false);
-                return;
-            }
-
-            const movieProposalIds = (movieProposals ?? []).map(movie => movie.id)
-
-            let votes: Pick<MovieVote, "movie_proposal_id" | "user_id">[] = [];
-
-            if (movieProposalIds.length > 0) {
-                const { data: moviesVoteData, error: moviesVoteError } = await supabase.from("movie_vote").select("movie_proposal_id, user_id").in("movie_proposal_id", movieProposalIds);
-
-                if (moviesVoteError) {
-                    console.error("MOVIE VOTES ERROR:", moviesVoteError);
-                    setLoading(false);
-                    return;
-                } else {
-                    votes = moviesVoteData ?? [];
-                }
-            }
-
-            const myVotes = votes.filter((vote) => vote.user_id === user.id).map((vote) => vote.movie_proposal_id);
-
-            const formattedMovies: MovieProposalWithUser[] =
-                (movieProposals ?? []).map(
-                    (movie) => {
-                        const proposer =
-                            Array.isArray(movie.users)
-                                ? movie.users[0]
-                                : movie.users;
-
-                        return {
-                            id: movie.id,
-                            room_id: movie.room_id,
-                            proposed_by: movie.proposed_by,
-                            movie_id: movie.movie_id,
-                            title: movie.title,
-                            year: movie.year,
-                            poster_url:
-                                movie.poster_url,
-                            created_at:
-                                movie.created_at,
-
-                            proposer:
-                                proposer as User,
-
-                            votes: votes.filter(
-                                (vote) =>
-                                    vote.movie_proposal_id ===
-                                    movie.id
-                            ).length,
-                        };
-                    }
-                );
-
-            setVotedProp(myVotes);
-            setPropositions(formattedMovies);
-            setLoading(false);
-        };
-
-        loadMovies();
-    }, [inviteCode]);
+    const error = actionError || contextError;
 
     const addProposition = async () => {
-        if (!selectedMovie || !currentUserId) {
+        if (!selectedMovie || !currentUserId || !roomId || actionLoading) {
             return;
         }
         setActionLoading(true);
-        setError("");
+        setActionError("");
 
-        const {
-            data: room,
-            error: roomError,
-        } = await supabase
-            .from("movie_room")
-            .select("id")
-            .eq("invite_code", inviteCode)
-            .single();
-
-        if (roomError) {
-            console.error("Błąd przy pobieraniu pokoju:", roomError);
-            setError("⚠ Nie znaleziono pokoju");
-            setActionLoading(false);
-            return;
-        }
-
-        const {
-            data: newMovie,
-            error: insertError,
-        } = await supabase
+        const { data: newMovie, error: insertError } = await supabase
             .from("movie_proposals")
             .insert({
-                room_id: room.id,
+                room_id: roomId,
                 proposed_by: currentUserId,
                 movie_id: selectedMovie.imdbID,
                 title: selectedMovie.Title,
                 year: selectedMovie.Year,
-                poster_url:
-                    selectedMovie.Poster !== "N/A"
-                        ? selectedMovie.Poster
-                        : null,
+                poster_url: selectedMovie.Poster !== "N/A" ? selectedMovie.Poster : null,
             })
             .select(`
                 id,
@@ -193,7 +74,7 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
 
         if (insertError) {
             console.error("Błąd przy dodawaniu propozycji filmu:", insertError);
-            setError("⚠ Nie udało się dodać propozycji filmu.");
+            setActionError("⚠ Nie udało się dodać propozycji filmu.");
             setActionLoading(false);
             return;
         }
@@ -213,55 +94,79 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
             votes: 0,
         };
 
-        setPropositions((prev) => [
-            ...prev,
-            newProposition,
-        ]);
-
+        addMovieProposalState(newProposition);
         setSelectedMovie(null);
         setShowPropForm(false);
         setActionLoading(false);
-    }
+    };
 
     const handleVote = async (id: string) => {
         if (deleteMode || !currentUserId || actionLoading) return;
 
         setActionLoading(true);
-        setError("");
+        setActionError("");
 
         const alreadyVoted = votedProp.includes(id);
 
         if (alreadyVoted) {
-            const { error: deleteError } = await supabase.from("movie_vote").delete().eq("movie_proposal_id", id).eq("user_id", currentUserId);
+            const { error: deleteError } = await supabase
+                .from("movie_vote")
+                .delete()
+                .eq("movie_proposal_id", id)
+                .eq("user_id", currentUserId);
 
             if (deleteError) {
                 console.error("Błąd przy usuwaniu głosu:", deleteError);
-                setError("⚠ Nie udało się usunąć głosu.");
+                setActionError("⚠ Nie udało się usunąć głosu.");
                 setActionLoading(false);
                 return;
             }
 
             setVotedProp((prev) => prev.filter((voteId) => voteId !== id));
-
-            setPropositions((prev) => prev.map((movie) => movie.id === id ? { ...movie, votes: Math.max(0, movie.votes - 1), } : movie));
-
+            setPropositions((prev) =>
+                prev.map((movie) =>
+                    movie.id === id ? { ...movie, votes: Math.max(0, movie.votes - 1) } : movie
+                )
+            );
         } else {
-            const { error: insertError } = await supabase.from("movie_vote").insert({ movie_proposal_id: id, user_id: currentUserId, });
+            const { error: insertError } = await supabase
+                .from("movie_vote")
+                .insert({ movie_proposal_id: id, user_id: currentUserId });
 
             if (insertError) {
+                if (insertError.code === "23505") {
+                    // Vote already exists in DB — toggle it off (delete) to resync
+                    await supabase
+                        .from("movie_vote")
+                        .delete()
+                        .eq("movie_proposal_id", id)
+                        .eq("user_id", currentUserId);
+
+                    setVotedProp((prev) => prev.filter((voteId) => voteId !== id));
+                    setPropositions((prev) =>
+                        prev.map((movie) =>
+                            movie.id === id ? { ...movie, votes: Math.max(0, movie.votes - 1) } : movie
+                        )
+                    );
+                    setActionLoading(false);
+                    return;
+                }
                 console.error("Błąd przy dodawaniu głosu:", insertError);
-                setError("⚠ Nie udało się dodać głosu.");
+                setActionError("⚠ Nie udało się dodać głosu.");
                 setActionLoading(false);
                 return;
             }
 
             setVotedProp((prev) => [...prev, id]);
-
-            setPropositions((prev) => prev.map((movie) => movie.id === id ? { ...movie, votes: movie.votes + 1 } : movie));
+            setPropositions((prev) =>
+                prev.map((movie) =>
+                    movie.id === id ? { ...movie, votes: movie.votes + 1 } : movie
+                )
+            );
         }
 
         setActionLoading(false);
-    }
+    };
 
     const handleDelete = async (id: string) => {
         if (!isHost || actionLoading) {
@@ -269,31 +174,44 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
         }
 
         setActionLoading(true);
-        setError("");
+        setActionError("");
+
+        // Delete associated votes first to satisfy foreign key constraint
+        const { error: votesError } = await supabase.from("movie_vote").delete().eq("movie_proposal_id", id);
+        if (votesError) {
+            console.error("Błąd przy usuwaniu głosów dla filmu:", votesError);
+        }
 
         const { error: deleteError } = await supabase.from("movie_proposals").delete().eq("id", id);
 
         if (deleteError) {
             console.error("Błąd przy usuwaniu propozycji filmu:", deleteError);
-            setError("⚠ Nie udało się usunąć propozycji filmu.");
+            setActionError("⚠ Nie udało się usunąć propozycji filmu.");
             setActionLoading(false);
             return;
         }
 
-        setPropositions((prev) => prev.filter((movie) => movie.id !== id));
-        setVotedProp((prev) => prev.filter((voteId) => voteId !== id));
-
+        removeMovieProposalState(id);
         setActionLoading(false);
-    }
+    };
 
     const toggleDeleteMode = () => {
         if (!isHost) return;
-
         setDeleteMode((prev) => !prev);
         setShowPropForm(false);
     };
 
     const maxProp = propositions.length > 0 ? Math.max(...propositions.map((p) => p.votes)) : 0;
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-10">
+                <div className="vhs-badge animate-pulse text-neon-lime">
+                    ŁADOWANIE PROPOZYCJI FILMÓW...
+                </div>
+            </div>
+        );
+    }
 
     return (
         <section>
@@ -308,9 +226,11 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                 <div className="vhs-badge mt-1 text-text-light">
                     {propositions.length === 0
                         ? "Nie wybrano żadnych filmów - dodaj jeden poniżej"
-                        : "Zagłosuj na film który objerzmy"}
+                        : "Zagłosuj na film który obejrzymy"}
                 </div>
             </div>
+
+            {error && <div className="mb-4 vhs-badge text-red-500">{error}</div>}
 
             {/* Propose form */}
             <div className="mb-4">
@@ -320,15 +240,26 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                     </span>
 
                     <div className="flex gap-2">
-                        <button onClick={() => setShowPropForm(!showPropForm)} className={`vhs-badge cursor-pointer rounded-sm border px-2.5 py-1 transition-all ${showPropForm ? "border-neon-lime/35 bg-neon-lime/10 text-neon-lime hover:bg-neon-lime/15" : "border-neon-lime/35 bg-transparent text-neon-lime hover:bg-neon-lime/10"}`}>
+                        <button
+                            onClick={() => setShowPropForm(!showPropForm)}
+                            className={`vhs-badge cursor-pointer rounded-sm border px-2.5 py-1 transition-all ${
+                                showPropForm
+                                    ? "border-neon-lime/35 bg-neon-lime/10 text-neon-lime hover:bg-neon-lime/15"
+                                    : "border-neon-lime/35 bg-transparent text-neon-lime hover:bg-neon-lime/10"
+                            }`}
+                        >
                             {showPropForm ? "✕ ANULUJ" : "+ DODAJ"}
                         </button>
-                        {
-                            (!showPropForm && isHost) &&
-                            <button onClick={toggleDeleteMode} className={`vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-red-500/20 border-red-500 bg-transparent text-red-500 ${deleteMode ? "border-red-500/35 bg-red-500/10" : "border-red-500/35 bg-transparent"}`}>
+                        {!showPropForm && isHost && (
+                            <button
+                                onClick={toggleDeleteMode}
+                                className={`vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-red-500/20 border-red-500 bg-transparent text-red-500 ${
+                                    deleteMode ? "border-red-500/35 bg-red-500/10" : "border-red-500/35 bg-transparent"
+                                }`}
+                            >
                                 ✕ Usuń
                             </button>
-                        }
+                        )}
                     </div>
                 </div>
 
@@ -339,7 +270,8 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                             <button
                                 type="button"
                                 onClick={addProposition}
-                                className="vhs-badge rounded-sm border border-neon-lime/40 bg-neon-lime/10 px-3 py-2 text-neon-lime transition hover:bg-neon-lime/20"
+                                disabled={actionLoading}
+                                className="vhs-badge rounded-sm border border-neon-lime/40 bg-neon-lime/10 px-3 py-2 text-neon-lime transition hover:bg-neon-lime/20 disabled:opacity-50"
                             >
                                 + DODAJ FILM DO PROPOZYCJI
                             </button>
@@ -350,10 +282,7 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
 
             {propositions.length === 0 ? (
                 <div className="flex flex-col items-center gap-3 rounded-sm border border-dashed border-border bg-[#0e0e1a] py-10">
-                    <div className="text-[32px] opacity-30">
-                        🎬
-                    </div>
-
+                    <div className="text-[32px] opacity-30">🎬</div>
                     <div className="vhs-badge text-center uppercase text-[#333360]">
                         Nie ma propozycji filmów
                     </div>
@@ -368,7 +297,13 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                             <div
                                 key={p.id}
                                 onClick={() => handleVote(p.id)}
-                                className={`w-full overflow-hidden rounded-sm text-left transition-all duration-200 ${picked ? "border-2 border-neon-lime bg-neon-lime/10 shadow-[0_0_18px_#9eff2d40]" : leading && votedProp.length > 0 ? "border border-neon-lime/25 bg-transparent" : "border border-transparent bg-transparent"} ${deleteMode ? "cursor-default" : "cursor-pointer"}`}
+                                className={`w-full overflow-hidden rounded-sm text-left transition-all duration-200 ${
+                                    picked
+                                        ? "border-2 border-neon-lime bg-neon-lime/10 shadow-[0_0_18px_#9eff2d40]"
+                                        : leading && votedProp.length > 0
+                                        ? "border border-neon-lime/25 bg-transparent"
+                                        : "border border-transparent bg-transparent"
+                                } ${deleteMode ? "cursor-default" : "cursor-pointer"}`}
                             >
                                 <div className="flex items-stretch gap-0">
                                     {/* Poster */}
@@ -384,7 +319,11 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                                             />
                                         ) : (
                                             <div className="flex min-h-30 w-22.5 items-center justify-center border-r border-border bg-[#12082a]">
-                                                <span className={`font-russo text-[28px] ${picked ? "text-neon-lime/40" : "text-neon-lime/20"}`}>
+                                                <span
+                                                    className={`font-russo text-[28px] ${
+                                                        picked ? "text-neon-lime/40" : "text-neon-lime/20"
+                                                    }`}
+                                                >
                                                     {p.title.slice(0, 1).toUpperCase()}
                                                 </span>
                                             </div>
@@ -394,7 +333,11 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                                     <div className="flex-1 p-3">
                                         <div className="mb-2 flex items-start justify-between gap-2">
                                             <div>
-                                                <span className={`font-barlow-condensed text-[18px] font-bold ${picked ? "text-neon-lime" : "text-[#e8e0ff]"}`}>
+                                                <span
+                                                    className={`font-barlow-condensed text-[18px] font-bold ${
+                                                        picked ? "text-neon-lime" : "text-[#e8e0ff]"
+                                                    }`}
+                                                >
                                                     {p.title}
                                                 </span>
 
@@ -412,18 +355,17 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
 
                                                 {deleteMode && (
                                                     <button
-                                                        onClick={() => handleDelete(p.id)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDelete(p.id);
+                                                        }}
                                                         className="vhs-badge rounded-sm cursor-pointer border border-red-500/40 bg-red-500/10 p-1 text-red-500 transition hover:bg-red-500/20"
                                                     >
                                                         <X className="size-4" />
                                                     </button>
                                                 )}
 
-                                                {picked && (
-                                                    <span className="text-neon-lime">
-                                                        ✓
-                                                    </span>
-                                                )}
+                                                {picked && <span className="text-neon-lime">✓</span>}
                                             </div>
                                         </div>
 
@@ -436,7 +378,11 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                                                 />
                                             </div>
 
-                                            <span className={`vhs-badge ${picked ? "text-neon-lime" : "text-text-light"}`}>
+                                            <span
+                                                className={`vhs-badge ${
+                                                    picked ? "text-neon-lime" : "text-text-light"
+                                                }`}
+                                            >
                                                 {p.votes}
                                             </span>
                                         </div>
@@ -450,7 +396,7 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
 
             {votedProp.length > 0 && (
                 <div className="mt-4 rounded-sm border border-neon-lime/10 bg-neon-lime/5 p-3 text-center vhs-badge text-neon-lime">
-                    ZAGŁOSOWANO NA: {" "}
+                    ZAGŁOSOWANO NA:{" "}
                     {propositions
                         .filter((p) => votedProp.includes(p.id))
                         .map((p) => p.title)
@@ -460,6 +406,6 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
             )}
         </section>
     );
-}
+};
 
-export default MovieVoteTab
+export default MovieVoteTab;
