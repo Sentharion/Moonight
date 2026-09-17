@@ -9,6 +9,15 @@ export interface DashboardRoom {
     participants:number,
 }
 
+interface ParticipantWithRoom {
+    room_id: string;
+    movie_room: MovieRoom | MovieRoom[] | null;
+}
+
+interface ParticipantCountRow {
+    room_id: string;
+}
+
 /**
  * Fetches all rooms where user is a participant along with host, selected movies, and selected date.
  * Performs queries in batched operations.
@@ -17,17 +26,19 @@ export async function fetchDashboardRooms(
     supabase: SupabaseClient,
     userId: string
 ): Promise<DashboardRoom[]> {
-    const { data: participants, error: participantsError } = await supabase
+    const { data: rawParticipants, error: participantsError } = await supabase
         .from("movie_room_participants")
         .select("room_id,movie_room (id,title,venue,invite_code,created_at,host_id,selected_date_id)")
         .eq("user_id", userId);
 
-    if (participantsError || !participants) {
+    if (participantsError || !rawParticipants) {
         console.error("fetchDashboardRooms — participants error:", participantsError);
         return [];
     }
 
-    const allRooms: MovieRoom[] = participants.flatMap((participant) => {
+    const participants = rawParticipants as unknown as ParticipantWithRoom[];
+
+    const allRooms: MovieRoom[] = participants.flatMap((participant: ParticipantWithRoom) => {
         const roomData = Array.isArray(participant.movie_room)
             ? participant.movie_room[0]
             : participant.movie_room;
@@ -51,7 +62,7 @@ export async function fetchDashboardRooms(
     const roomIds = allRooms.map((r) => r.id);
     const selectedDateIds = allRooms.map((r) => r.selected_date_id).filter(Boolean) as string[];
 
-    const [hostsResult, moviesResult, datesResult,participantsResult] = await Promise.all([
+    const [hostsResult, moviesResult, datesResult, participantsResult] = await Promise.all([
         supabase.from("users").select("id,username,avatar,created_at").in("id", hostIds),
         supabase.from("selected_movies").select("room_id,movie_proposal_id,position").in("room_id", roomIds).order("position", { ascending: true }),
         selectedDateIds.length > 0
@@ -65,13 +76,18 @@ export async function fetchDashboardRooms(
     if (datesResult.error) console.error("fetchDashboardRooms — dates error:", datesResult.error);
     if (participantsResult.error) console.error("fetchDashboardRooms — participants error:", participantsResult.error);
 
-    const hostsById = Object.fromEntries((hostsResult.data ?? []).map((h) => [h.id, h]));
-    const moviesByRoom = (moviesResult.data ?? []).reduce<Record<string, SelectedMovie[]>>((acc, m) => {
-        (acc[m.room_id] ??= []).push(m as SelectedMovie);
+    const hostsData = (hostsResult.data ?? []) as User[];
+    const moviesData = (moviesResult.data ?? []) as SelectedMovie[];
+    const datesData = (datesResult.data ?? []) as DateProposal[];
+    const participantsData = (participantsResult.data ?? []) as ParticipantCountRow[];
+
+    const hostsById = Object.fromEntries(hostsData.map((h: User) => [h.id, h]));
+    const moviesByRoom = moviesData.reduce<Record<string, SelectedMovie[]>>((acc: Record<string, SelectedMovie[]>, m: SelectedMovie) => {
+        (acc[m.room_id] ??= []).push(m);
         return acc;
     }, {});
-    const datesById = Object.fromEntries((datesResult.data ?? []).map((d) => [d.id, d]));
-    const participantsByRoom = (participantsResult.data ?? []).reduce<Record<string, number>>((acc, participant) => {
+    const datesById = Object.fromEntries(datesData.map((d: DateProposal) => [d.id, d]));
+    const participantsByRoom = participantsData.reduce<Record<string, number>>((acc: Record<string, number>, participant: ParticipantCountRow) => {
         acc[participant.room_id] = (acc[participant.room_id] ?? 0) + 1;
         return acc;
     }, {});
@@ -87,8 +103,9 @@ export async function fetchDashboardRooms(
             room,
             host: host as User,
             selectedMovies: moviesByRoom[room.id] ?? [],
-            selectedDate: room.selected_date_id ? (datesById[room.selected_date_id] as DateProposal ?? null) : null,
-            participants:participantsByRoom[room.id] ?? 0,
+            selectedDate: room.selected_date_id ? (datesById[room.selected_date_id] ?? null) : null,
+            participants: participantsByRoom[room.id] ?? 0,
         }];
     });
 }
+

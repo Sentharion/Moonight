@@ -84,13 +84,22 @@ export async function fetchParticipants(
         return [];
     }
 
+    interface RawParticipantRow {
+        room_id: string;
+        user_id: string;
+        role: "host" | "participant";
+        users: User | User[] | null;
+    }
+
+    const participantsData = data as unknown as RawParticipantRow[];
+
     // Find members whose user join returned null or empty
-    const missingUserIds = data
-        .filter((member) => {
+    const missingUserIds = participantsData
+        .filter((member: RawParticipantRow) => {
             const userObj = Array.isArray(member.users) ? member.users[0] : member.users;
             return !userObj || !(userObj as User).username;
         })
-        .map((member) => member.user_id);
+        .map((member: RawParticipantRow) => member.user_id);
 
     // Batch-fetch missing profiles directly from public.users
     const fallbackById: Record<string, User> = {};
@@ -100,12 +109,12 @@ export async function fetchParticipants(
             .select("id, username, avatar, created_at")
             .in("id", missingUserIds);
 
-        for (const u of fallbackUsers ?? []) {
+        for (const u of (fallbackUsers ?? []) as User[]) {
             fallbackById[u.id] = u as User;
         }
     }
 
-    return data.map((member) => {
+    return participantsData.map((member: RawParticipantRow) => {
         const userObj = (Array.isArray(member.users) ? member.users[0] : member.users) as User | null;
         const resolvedUser: User = (userObj && userObj.username)
             ? userObj
