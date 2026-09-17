@@ -1,6 +1,7 @@
 import { DateProposalWithUser} from "../../../constant";
 import Bar from "./Bar";
 import Link from "next/link";
+import { dateStringFormat } from "@/app/utils/dateFormat";
 
 interface DatePropositionsProps {
     dates: DateProposalWithUser[];
@@ -8,7 +9,7 @@ interface DatePropositionsProps {
     activeTab?:string;
 }
 
-const DatePropositions = ({dates,inviteCode,activeTab}: DatePropositionsProps) => {
+const DatePropositions = ({dates,inviteCode}: DatePropositionsProps) => {
 
     const maxDateProp = dates.length > 0 ? Math.max(...dates.map((d) => d.votes)) : 0;
 
@@ -25,7 +26,7 @@ const DatePropositions = ({dates,inviteCode,activeTab}: DatePropositionsProps) =
             </div>
 
             {dates.length === 0 ? (
-                <div className="flex items-center justify-center gap-2 rounded-sm border border-dashed border-[#1e1e38] bg-[#0e0e1a] py-5">
+                <div className="flex items-center justify-center gap-2 rounded-sm border border-dashed border-border bg-[#0e0e1a] py-5">
                     <span className="opacity-30">
                     📅
                     </span>
@@ -35,14 +36,14 @@ const DatePropositions = ({dates,inviteCode,activeTab}: DatePropositionsProps) =
                     </span>
                 </div>
             ) : (
-                <div className="overflow-hidden rounded-sm border border-[#1e1e38] bg-[#0e0e1a]">
+                <div className="overflow-hidden rounded-sm border border-border bg-[#0e0e1a]">
                     {dates.map((d, i) => {
                         const isLeading = d.votes === maxDateProp && d.votes > 0;
 
                         return (
                             <div key={d.id} className={`flex items-center gap-3 px-3 py-2.5 ${i < dates.length - 1 ? "border-b border-[#1a1a2e]" : ""}`}>
                                 <span className={`min-w-0 flex-1 truncate font-['Share_Tech_Mono'] text-[11px] ${isLeading ? "text-neon-blue" : "text-text-light"}`}>
-                                    {d.date}
+                                    {dateStringFormat(d.date)}
                                 </span>
 
                                 <div className="w-48">

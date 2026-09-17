@@ -7,3 +7,13 @@ export const dateFormat = (date:Date,time:string):string =>{
 
     return `${day}.${month}.${year} ${hours}:${minutes}`;
 }
+
+export const dateStringFormat = (date:string):string =>{
+    return new Date(date).toLocaleString("pl-PL", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+}

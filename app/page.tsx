@@ -1,48 +1,174 @@
 "use client"
-import {useState} from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { createClient } from "./lib/supabase/client";
+
+import { ensureUserProfile } from "./lib/queries/user";
 
 export default function Home() {
   const router = useRouter();
   const [loginUser, setLoginUser] = useState("");
   const [loginPass, setLoginPass] = useState("");
-  const [loginError, setLoginError] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const [register, setRegister] = useState(false);
   const [regisName, setRegisName] = useState("");
   const [regisPass, setRegisPass] = useState("");
   const [regisPassConf, setRegisPassConf] = useState("");
-  const [regisError, setRegisError] = useState(false);
-  const [regisPassError, setRegisPassError] = useState(false);
+  const [regisError, setRegisError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [regisEmail, setRegisEmail] = useState("");
 
-  const handleSetRegister = () => {
-    setRegister(!register);
-    setLoginError(false);
-    setRegisError(false);
-    setRegisPassError(false);
+  const [loginEmail, setLoginEmail] = useState("");
+
+  const supabase = createClient();
+  const normalizedRegisEmail = regisEmail.trim().toLowerCase();
+  const normalizedLoginEmail = loginEmail.trim().toLowerCase();
+
+  const handleSetRegister = async () => {
+    setRegister(!register)
+    setLoginError("");
+    setRegisError("");
+    setLoginUser("");
+    setLoginPass("");
+    setRegisName("");
+    setRegisPass("");
+    setRegisPassConf("");
   }
-  const handleLogin = () => {
-    if(loginUser.trim() === "" || loginPass.trim() === ""){
-      setLoginError(true);
-      return;
-    }
-    router.push("/dashboard");
-  }
 
-  const handleRegister = () => {
-    if(regisName.trim() === "" || regisPass.trim() === "" || regisPassConf.trim() === ""){
-      setRegisError(true);
-      setRegisPassError(false);
-      return;
-    }
+  const handleRegister = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    setLoginError("");
+    setRegisError("");
 
-    if(regisPass !== regisPassConf){
-      setRegisPassError(true);
-      setRegisError(false);
-      return;
-    }
+    const normalizedUser = regisName.trim().toLowerCase();
     
-    router.push("/dashboard");
+
+    if (!normalizedUser) {
+      setRegisError("⚠ Podaj nazwe użytkownika");
+      return;
+    }
+
+    if (!normalizedRegisEmail) {
+      setRegisError("⚠ Podaj adres email");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedRegisEmail)) {
+      setRegisError("⚠ Podaj poprawny adres email");
+      return;
+    }
+
+    if (normalizedUser.length < 3) {
+      setRegisError("⚠ Nazwa użytkownika musi mieć co najmniej 3 znaki");
+      return;
+    }
+
+    if (!regisPass) {
+      setRegisError("⚠ Podaj hasło");
+      return;
+    }
+
+    if (regisPass.length < 6) {
+      setRegisError("⚠ Hasło musi mieć co najmniej 6 znaków");
+      return;
+    }
+
+    if (regisPass !== regisPassConf) {
+      setRegisError("⚠ Hasła się nie zgadzają");
+      return;
+    }
+
+    setLoading(true);
+
+    const { data: signUpData, error } = await supabase.auth.signUp({
+      email: normalizedRegisEmail,
+      password: regisPass,
+      options: {
+        data: {
+          username: normalizedUser,
+          avatar: null
+        }
+      }
+    });
+
+    if (error) {
+      setRegisError(`⚠ Wystąpił błąd rejestracji - ${error.message}`);
+      setLoading(false);
+      return;
+    }
+
+    if (signUpData?.user) {
+      await ensureUserProfile(supabase, signUpData.user);
+    }
+
+    router.push('/dashboard');
+    router.refresh();
   }
+
+
+  const handleLogin = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    setLoginError("");
+    setRegisError("");
+
+    const email = loginEmail.trim().toLowerCase();
+
+    if (!email && !loginPass) {
+      setLoginError("⚠ Uzupełnij wszystkie pola");
+      return;
+    }
+
+    if (!email) {
+      setLoginError("⚠ Podaj adres email");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setLoginError("⚠ Podaj poprawny adres email");
+      return;
+    }
+
+    if (!loginPass) {
+      setLoginError("⚠ Podaj hasło");
+      return;
+    }
+
+    if (loginPass.length < 6) {
+      setLoginError("⚠ Hasło musi mieć co najmniej 6 znaków");
+      return;
+    }
+
+    setLoading(true);
+
+    const { data: loginData, error } = await supabase.auth.signInWithPassword({
+      email,
+      password: loginPass,
+    });
+
+    if (error) {
+      console.error("LOGIN ERROR:", error);
+
+      setLoginError(
+        error.message === "Invalid login credentials"
+          ? "⚠ Nieprawidłowy email lub hasło"
+          : `⚠ ${error.message}`
+      );
+
+      setLoading(false);
+      return;
+    }
+
+    if (loginData?.user) {
+      await ensureUserProfile(supabase, loginData.user);
+    }
+
+    router.push("/dashboard");
+    router.refresh();
+  };
+
+
+  const hasErrors = loginError || regisError
+
   return (
     <div className="flex min-h-full flex-col items-center justify-center bg-[#080810] px-6 scanlines">
 
@@ -57,21 +183,24 @@ export default function Home() {
           </div>
         </div>
 
-        <div className={`flex flex-col gap-4 rounded-sm p-6 transition-all duration-200 ${loginError || regisError || regisPassError ? "border-2 border-neon-pink shadow-[0_0_24px_#ff2d7840]" : "border border-[#1e1e38]"} bg-[#0e0e1a]`}>
-          <div className={`vhs-badge mb-1 text-center ${loginError || regisError || regisPassError ? "text-neon-pink" : "text-cyan-300"}`} >
-            {!register ? (loginError ? "⚠ Uzupełnij wszystkie pola!" : "▶ Logowanie") : (regisPassError ? "⚠ Hasła nie są takie same!" : (regisError ? "⚠ Uzupełnij wszystkie pola!" : "▶ Rejestracja"))}
+        <div className={`flex flex-col gap-4 rounded-sm p-6 transition-all duration-200 ${loginError || regisError ? "border-2 border-neon-pink shadow-[0_0_24px_#ff2d7840]" : "border border-[#1e1e38]"} bg-[#0e0e1a]`}>
+          <div className={`vhs-badge mb-1 text-center ${hasErrors ? "text-neon-pink" : "text-cyan-300"}`} >
+            {
+              !register ? (
+                loginError ? loginError : "▶ Logowanie"
+              ) : (
+                regisError ? regisError : "▶ Rejestracja"
+              )
+            }
           </div>
           {!register ? (
-            <>
+            <form onSubmit={handleLogin} className="flex flex-col gap-4">
               <div>
                 <div className="vhs-badge mb-2 uppercase text-text-light">
-                  Nazwa użytkownika
+                  Adres e-mail
                 </div>
 
-                <input value={loginUser} onChange={(e) => setLoginUser(e.target.value)} placeholder="Nazwa użytkownika" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Barlow'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]"
-                onKeyDown={(e) => {
-                if (e.key === "Enter") handleLogin();
-                }}
+                <input value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Adres e-mail" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Barlow'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]"
                 />
               </div>
 
@@ -79,55 +208,59 @@ export default function Home() {
                 <div className="vhs-badge mb-2 uppercase text-text-light">
                   Hasło
                 </div>
-                <input type="password" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]" onKeyDown={(e) => {if (e.key === "Enter") handleLogin();}}/>
+                <input type="password" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]" />
               </div>
 
-              <button onClick={handleLogin} className="vhs-badge uppercase mt-1 w-full cursor-pointer rounded-sm border-2 border-neon-pink bg-[#ff2d7818] py-4 font-['Russo_One'] text-[15px] tracking-[0.08em] text-neon-pink shadow-[0_0_20px_#ff2d7840] transition-all hover:bg-[#ff2d7825] hover:shadow-[0_0_25px_#ff2d7860]">
-                ▶ Zaloguj się
+              <button type="submit" className="vhs-badge uppercase mt-1 w-full cursor-pointer rounded-sm border-2 border-neon-pink bg-[#ff2d7818] py-4 font-['Russo_One'] text-[15px] tracking-[0.08em] text-neon-pink shadow-[0_0_20px_#ff2d7840] transition-all hover:bg-[#ff2d7825] hover:shadow-[0_0_25px_#ff2d7860]">
+                ▶ {loading ? "Logowanie..." : "Zaloguj się"}
               </button>
-            </>
+            </form>
           ) : (
-            <>
+            <form onSubmit={handleRegister} className="flex flex-col gap-4">
               <div>
                 <div className="vhs-badge mb-2 uppercase text-text-light">
                   Nazwa użytkownika
                 </div>
 
                 <input value={regisName} onChange={(e) => setRegisName(e.target.value)} placeholder="Nazwa użytkownika" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Barlow'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]"
-                onKeyDown={(e) => {
-                if (e.key === "Enter") handleLogin();
-                }}
                 />
+              </div>
+
+              <div>
+                <div className="vhs-badge mb-2 uppercase text-text-light">
+                  Adres e-mail
+                </div>
+                <input type="email" value={regisEmail} onChange={(e) => setRegisEmail(e.target.value)} placeholder="Adres e-mail" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]" />
               </div>
 
               <div>
                 <div className="vhs-badge mb-2 uppercase text-text-light">
                   Hasło
                 </div>
-                <input type="password" value={regisPass} onChange={(e) => setRegisPass(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]" onKeyDown={(e) => {if (e.key === "Enter") handleLogin();}}/>
+                <input type="password" value={regisPass} onChange={(e) => setRegisPass(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]" />
               </div>
 
-              
+
               <div>
                 <div className="vhs-badge mb-2 uppercase text-text-light">
                   Powtórz hasło
                 </div>
-                <input type="password" value={regisPassConf} onChange={(e) => setRegisPassConf(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]" onKeyDown={(e) => {if (e.key === "Enter") handleLogin();}}/>
+                <input type="password" value={regisPassConf} onChange={(e) => setRegisPassConf(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]" />
               </div>
 
-              <button onClick={handleRegister} className="vhs-badge uppercase mt-1 w-full cursor-pointer rounded-sm border-2 border-neon-pink bg-[#ff2d7818] py-4 font-['Russo_One'] text-[15px] tracking-[0.08em] text-neon-pink shadow-[0_0_20px_#ff2d7840] transition-all hover:bg-[#ff2d7825] hover:shadow-[0_0_25px_#ff2d7860]">
-                ▶ Zarejestruj się
+              <button type="submit" className="vhs-badge uppercase mt-1 w-full cursor-pointer rounded-sm border-2 border-neon-pink bg-[#ff2d7818] py-4 font-['Russo_One'] text-[15px] tracking-[0.08em] text-neon-pink shadow-[0_0_20px_#ff2d7840] transition-all hover:bg-[#ff2d7825] hover:shadow-[0_0_25px_#ff2d7860]">
+                ▶ {loading ? "Tworzenie konta..." : "Zarejestruj się"}
               </button>
-            </>
+            </form>
           )}
-          
 
-          {!register ? (<div className="vhs-badge text-center text-text-light mt-1">Nie masz konta? <button onClick={handleSetRegister} className="text-neon-pink hover:text-neon-pink/70 cursor-pointer">Zarejestruj się</button></div>) : ( <div className="vhs-badge text-center text-text-light mt-1">Masz konto? <button onClick={handleSetRegister} className="text-neon-pink hover:text-neon-pink/70 cursor-pointer">Zaloguj się</button></div>)}
+
+          {!register ? (<div className="vhs-badge text-center text-text-light mt-1">Nie masz konta? <button onClick={handleSetRegister} className="text-neon-pink hover:text-neon-pink/70 cursor-pointer">Zarejestruj się</button></div>) : (<div className="vhs-badge text-center text-text-light mt-1">Masz konto? <button onClick={handleSetRegister} className="text-neon-pink hover:text-neon-pink/70 cursor-pointer">Zaloguj się</button></div>)}
         </div>
 
-      <div className="vhs-badge uppercase text-center text-[#1e1e38]">
-        Stworzone przez Senthariona · v2.6
-      </div>
+        <div className="vhs-badge uppercase text-center text-[#1e1e38]">
+          Stworzone przez Senthariona · v2.6
+        </div>
 
       </div>
     </div>

@@ -1,11 +1,80 @@
 "use client";
 import { useState} from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "../lib/supabase/client";
+
+import { ensureUserProfile } from "../lib/queries/user";
 
 const CreatePage = () => {
+    const generateInviteCode = () => {
+        return Math.random()
+            .toString(36)
+            .substring(2, 8)
+            .toUpperCase();
+    };
 
-    const [canLaunch, setCanLaunch] = useState(false);
+    const router = useRouter();
+    const supabase = createClient();
+
     const [name, setName] = useState("");
-    const [venue, setVenue] = useState("");
+    const [venue, setVenue] = useState(""); 
+    const [loading, setLoading] = useState(false); 
+    const [error, setError] = useState("");
+
+    const canLaunch = name.trim().length >= 3 && venue.trim().length >= 3 && !loading;
+
+    const handleCreateNight = async () =>{
+        if(!canLaunch) return;
+
+        setLoading(true);
+        setError("");
+
+        const {data: { user }, error: authError} = await supabase.auth.getUser();
+
+        if(authError || !user) {
+            console.error("AUTH ERROR:", authError);
+            setError("⚠ Wystąpił błąd autoryzacji. Zaloguj się ponownie.");
+            setLoading(false);
+            return;
+        }
+
+        await ensureUserProfile(supabase, user);
+
+        const inviteCode = generateInviteCode();
+
+        const {data:room,error:roomError} = await supabase.from("movie_room").insert({
+            title: name,
+            venue: venue,
+            host_id: user.id,
+            invite_code: inviteCode,
+        }).select().single();
+
+        if(roomError || !room){
+            console.error("CREATE ROOM ERROR:", roomError);
+            setError("⚠ Nie udało się utworzyć wieczoru filmowego. Spróbuj ponownie.");
+            setLoading(false);
+            return;
+        }
+
+        const {error: hostError} = await supabase.from("movie_room_participants").insert({
+            room_id: room.id,
+            user_id: user.id,
+            role: "host",
+        });
+
+        if(hostError){
+            console.error("CREATE HOST ERROR:", hostError);
+            setError("⚠ Nie udało się ustawić gospodarza. Spróbuj ponownie.");
+            await supabase.from("movie_room").delete().eq("id",room.id);
+            setLoading(false);
+            return;
+        }
+
+        router.replace(`/room/${room.invite_code}/`);
+        router.refresh();
+    }
+
+
 
     return (
         <div className="flex min-h-full p-2 flex-col bg-[#080810]">
@@ -22,6 +91,10 @@ const CreatePage = () => {
                         Nazwij wydarzenie — załoga zaproponuje filmy gdy dołączą.
                     </div>
                 </div>
+
+                {error && (
+                    <div className="vhs-badge text-neon-pink">{error}</div>
+                )}
 
                 {[
                     {
@@ -46,12 +119,12 @@ const CreatePage = () => {
                             value={f.value}
                             onChange={(e) => f.onChange(e.target.value)}
                             placeholder={f.placeholder}
-                            className="w-full rounded-sm border border-[#1e1e38] bg-[#0e0e1a] px-3 py-3 font-['Barlow'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880] focus:shadow-[0_0_10px_#ff2d7820]"
+                            className="w-full rounded-sm border border-border bg-[#0e0e1a] px-3 py-3 font-['Barlow'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880] focus:shadow-[0_0_10px_#ff2d7820]"
                         />
                     </div>
                 ))}
 
-                <button className={`w-full rounded-sm py-4 font-['Russo_One'] text-[15px] tracking-[0.08em] transition-all ${canLaunch ? "cursor-pointer border-2 border-neon-pink bg-[#ff2d7818] text-neon-pink shadow-[0_0_20px_#ff2d7840] hover:bg-[#ff2d7825]" : "cursor-not-allowed border border-[#1e1e38] bg-[#0e0e1a] text-[#333360]"}`}>
+                <button onClick={() => handleCreateNight()} disabled={!canLaunch} className={`w-full rounded-sm py-4 font-['Russo_One'] text-[15px] tracking-[0.08em] transition-all ${canLaunch ? "cursor-pointer border-2 border-neon-pink bg-[#ff2d7818] text-neon-pink shadow-[0_0_20px_#ff2d7840] hover:bg-[#ff2d7825]" : "cursor-not-allowed border border-[#1e1e38] bg-[#0e0e1a] text-[#333360]"}`}>
                     ▶ UTWÓRZ WIECZÓR FILMOWY
                 </button>
             </div>

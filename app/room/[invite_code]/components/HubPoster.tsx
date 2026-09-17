@@ -3,22 +3,24 @@ import Image from "next/image";
 
 interface HubPosterProps {
     room: MovieRoom;
-    host: User;
+    host?: User | null;
     crew: MovieRoomParticipant[];
     leading: MovieProposal | null;
 }
 
-
 const HubPoster = ({ room, host, crew, leading }: HubPosterProps) => {
     return (
         <div className="relative h-50 overflow-hidden rounded-sm border-2 border-neon-pink shadow-[0_0_24px_#ff2d7830,inset_0_0_24px_#ff2d7808]">
-            {leading?.posterUrl ? (
-            <>
-                <Image src={leading.posterUrl} alt="poster" width={400} height={600} quality={90} className="absolute inset-0 h-full w-full object-cover object-[center_10%] brightness-[0.35] saturate-[1.6]"/>
-                <div className="absolute inset-0 bg-[linear-gradient(135deg,#ff2d7815,#00e5ff08)]" />
-            </>
+            {leading?.poster_url ? (
+                <>
+                    <Image src={leading.poster_url} alt="poster" width={400} height={600} quality={90} className="absolute inset-0 h-full w-full object-cover object-[center_35%] brightness-[0.35] saturate-[1.6]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(135deg,#ff2d7815,#00e5ff08)]" />
+                </>
             ) : (
-                ""
+                <>
+                    <Image src="/poster_placeholder.png" alt="poster" width={400} height={600} quality={90} className="absolute inset-0 h-full w-full object-cover object-[center_10%] brightness-[0.35] saturate-[1.6]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(135deg,#ff2d7815,#00e5ff08)]" />
+                </>
             )}
 
             <div className="absolute inset-0 flex flex-col justify-end bg-[linear-gradient(to_top,#080810ee_0%,#08081099_40%,transparent_60%)] p-4">
@@ -40,7 +42,7 @@ const HubPoster = ({ room, host, crew, leading }: HubPosterProps) => {
                     </span>
 
                     <span className="uppercase vhs-badge text-[10px]! sm:text-[12px]! text-text-light">
-                        🎬 HOST: {host.username.toUpperCase()}
+                        🎬 HOST: {host?.username ? host.username.toUpperCase() : "NIEZNANY"}
                     </span>
 
                     {room.venue && (
@@ -51,7 +53,7 @@ const HubPoster = ({ room, host, crew, leading }: HubPosterProps) => {
                 </div>
             </div>
 
-            {leading?.posterUrl && (
+            {leading?.poster_url && (
                 <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-sm border border-[#ff2d7840] bg-[#080810cc] px-2 py-1">
                     <span className="text-[10px] text-neon-pink">
                         ▶
@@ -64,6 +66,6 @@ const HubPoster = ({ room, host, crew, leading }: HubPosterProps) => {
             )}
         </div>
     );
-}       
+}
 
 export default HubPoster;
