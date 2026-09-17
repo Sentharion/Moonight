@@ -85,6 +85,7 @@ const Dashboard = () => {
                                 selectedMovies={room.selectedMovies}
                                 currentUserId={currentUserId}
                                 onDelete={handleDeleteRoom}
+                                participants={room.participants}
                             />
                         ))}
                     </div>

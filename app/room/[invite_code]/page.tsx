@@ -4,6 +4,7 @@ import DatePropositions from "./components/DatePropositions";
 import Crew from "./components/Crew";
 import { createClient } from "../../lib/supabase/server";
 import { fetchFullRoomBundle } from "../../lib/queries/room";
+import { ensureUserProfile } from "../../lib/queries/user";
 
 interface RoomPageProps {
     params: Promise<{
@@ -15,10 +16,24 @@ export default async function RoomPage({ params }: RoomPageProps) {
     const { invite_code } = await params;
     const supabase = await createClient();
 
-    // 1 single database request for all room data (room, host, crew, movies, dates, votes)
-    const bundle = await fetchFullRoomBundle(supabase, invite_code);
+    // Get current user server-side so we can pass userId for vote state
+    const { data: authData } = await supabase.auth.getUser();
+    const currentUser = authData?.user ?? null;
+    const currentUserId = currentUser?.id ?? undefined;
 
-    if (!bundle) {
+    // Ensure profile exists in public.users for the current user
+    if (currentUser) {
+        await ensureUserProfile(supabase, currentUser);
+    }
+
+    // 1 single database request for all room data (room, host, crew, movies, dates, votes)
+    const bundle = await fetchFullRoomBundle(supabase, invite_code, currentUserId);
+
+    // Debug: log what we got for crew
+    console.log("[RoomPage] crew raw:", JSON.stringify(bundle?.crew ?? null, null, 2));
+    console.log("[RoomPage] host:", JSON.stringify(bundle?.host ?? null));
+
+    if (!bundle || !bundle.host) {
         return (
             <div className="flex min-h-full items-center justify-center">
                 <div className="vhs-badge text-red-500">
@@ -29,6 +44,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
     }
 
     const { room, host, crew, movieProposals: movies, dateProposals: dates } = bundle;
+    const isHost = Boolean(currentUserId && currentUserId === room.host_id);
 
     const leading = movies.length > 0 ? movies.reduce(
         (prev, current) => (current.votes > prev.votes ? current : prev),
@@ -39,7 +55,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
             <HubPoster room={room} host={host} crew={crew} leading={leading} />
             <MoviePropositions movies={movies} inviteCode={invite_code} />
             <DatePropositions dates={dates} inviteCode={invite_code} />
-            <Crew crew={crew} inviteCode={invite_code} />
+            <Crew crew={crew} inviteCode={invite_code} currentUserId={currentUserId} />
         </div>
     );
 }

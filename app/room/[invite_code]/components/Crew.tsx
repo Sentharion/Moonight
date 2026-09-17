@@ -4,10 +4,11 @@ import Link from "next/link";
 
 interface CrewProps {
     crew: MovieRoomParticipantWithUser[];
-    inviteCode:string;
+    inviteCode: string;
+    currentUserId: string | undefined;
 }
 
-const Crew = ({ crew,inviteCode }: CrewProps) => {
+const Crew = ({ crew, inviteCode,currentUserId }: CrewProps) => {
 
     return (
         <section>
@@ -26,11 +27,12 @@ const Crew = ({ crew,inviteCode }: CrewProps) => {
                     const user = member.users;
 
                     if (!user) return null;
+                    const isCurrentUser = member.user_id === currentUserId;
 
                     return (
                         <div
                             key={member.user_id}
-                            className="flex items-center gap-2.5 rounded-sm border border-border bg-[#0e0e1a] px-3 py-2"
+                            className={`flex items-center gap-2.5 rounded-sm border border-border ${isCurrentUser ? "border-neon-pink/40" : "border-border"} bg-[#0e0e1a] px-3 py-2`}
                         >
                             {user.avatar ? (
                                 <Image

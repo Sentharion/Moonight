@@ -3,6 +3,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "./lib/supabase/client";
 
+import { ensureUserProfile } from "./lib/queries/user";
+
 export default function Home() {
   const router = useRouter();
   const [loginUser, setLoginUser] = useState("");
@@ -78,7 +80,7 @@ export default function Home() {
 
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    const { data: signUpData, error } = await supabase.auth.signUp({
       email: normalizedRegisEmail,
       password: regisPass,
       options: {
@@ -93,6 +95,10 @@ export default function Home() {
       setRegisError(`⚠ Wystąpił błąd rejestracji - ${error.message}`);
       setLoading(false);
       return;
+    }
+
+    if (signUpData?.user) {
+      await ensureUserProfile(supabase, signUpData.user);
     }
 
     router.push('/dashboard');
@@ -134,7 +140,7 @@ export default function Home() {
 
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: loginData, error } = await supabase.auth.signInWithPassword({
       email,
       password: loginPass,
     });
@@ -150,6 +156,10 @@ export default function Home() {
 
       setLoading(false);
       return;
+    }
+
+    if (loginData?.user) {
+      await ensureUserProfile(supabase, loginData.user);
     }
 
     router.push("/dashboard");

@@ -3,6 +3,8 @@ import { useState} from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../lib/supabase/client";
 
+import { ensureUserProfile } from "../lib/queries/user";
+
 const CreatePage = () => {
     const generateInviteCode = () => {
         return Math.random()
@@ -35,6 +37,8 @@ const CreatePage = () => {
             setLoading(false);
             return;
         }
+
+        await ensureUserProfile(supabase, user);
 
         const inviteCode = generateInviteCode();
 

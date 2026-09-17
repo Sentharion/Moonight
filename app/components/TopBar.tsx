@@ -5,11 +5,23 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "../lib/supabase/client";
 
+import { ensureUserProfile } from "../lib/queries/user";
+
 const TopBar = () => {
   const pathname = usePathname();
   const supabase = createClient();
   const [roomTitle, setRoomTitle] = useState<string | null>(null);
   const cacheRef = useRef<Record<string, string>>({});
+
+  useEffect(() => {
+    const syncUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await ensureUserProfile(supabase, user);
+      }
+    };
+    syncUser();
+  }, [supabase]);
 
   useEffect(() => {
     if (!pathname.startsWith("/room/")) {

@@ -5,6 +5,8 @@ import { createClient } from "../../lib/supabase/client";
 import { fetchFullRoomBundle } from "../../lib/queries/room";
 import type { MovieProposalWithUser, DateProposalWithUser } from "../../constant";
 
+import { ensureUserProfile } from "../../lib/queries/user";
+
 interface RoomDataContextType {
     loading: boolean;
     error: string;
@@ -65,6 +67,7 @@ export function RoomDataProvider({
 
             const userId = authData.user.id;
             setCurrentUserId(userId);
+            await ensureUserProfile(supabase, authData.user);
 
             const bundle = await fetchFullRoomBundle(supabase, inviteCode, userId);
 

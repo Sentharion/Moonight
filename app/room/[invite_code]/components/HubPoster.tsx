@@ -3,7 +3,7 @@ import Image from "next/image";
 
 interface HubPosterProps {
     room: MovieRoom;
-    host: User;
+    host?: User | null;
     crew: MovieRoomParticipant[];
     leading: MovieProposal | null;
 }
@@ -42,7 +42,7 @@ const HubPoster = ({ room, host, crew, leading }: HubPosterProps) => {
                     </span>
 
                     <span className="uppercase vhs-badge text-[10px]! sm:text-[12px]! text-text-light">
-                        🎬 HOST: {host.username.toUpperCase()}
+                        🎬 HOST: {host?.username ? host.username.toUpperCase() : "NIEZNANY"}
                     </span>
 
                     {room.venue && (

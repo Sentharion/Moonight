@@ -6,6 +6,8 @@ import { createClient } from "../lib/supabase/client";
 import Image from "next/image";
 
 
+import { ensureUserProfile } from "../lib/queries/user";
+
 const ProfilePage = () => {
     const router = useRouter();
     const supabase = createClient();
@@ -37,21 +39,27 @@ const ProfilePage = () => {
                 return;
             }
 
-            const { data, error: profileError } = await supabase
-                .from("users")
-                .select("username,avatar")
-                .eq("id", user.id)
-                .single();
+            let profile = await ensureUserProfile(supabase, user);
 
-            if (profileError) {
-                console.error("Błąd profilu: ", profileError);
-                setError("Nie udało się pobrać profilu");
-                setLoading(false);
-                return;
+            if (!profile) {
+                const { data, error: profileError } = await supabase
+                    .from("users")
+                    .select("username,avatar")
+                    .eq("id", user.id)
+                    .single();
+
+                if (profileError) {
+                    console.error("Błąd profilu: ", profileError);
+                    setError("Nie udało się pobrać profilu");
+                    setLoading(false);
+                    return;
+                }
+
+                profile = data as any;
             }
 
-            setUsername(data?.username ?? "");
-            setAvatar(data?.avatar ?? null);
+            setUsername(profile?.username ?? "");
+            setAvatar(profile?.avatar ?? null);
             setLoading(false);
         };
         loadProfile();

@@ -6,15 +6,16 @@ import { createClient } from "../lib/supabase/client";
 
 interface RoomPreviewProps {
     room: MovieRoom;
-    host: User;
+    host?: User | null;
     selectedMovies: SelectedMovie[];
     selectedDate: DateProposal | null;
     currentUserId: string | null;
+    participants: number
     onDelete: (room_id:string) => void;
 }
 
-const RoomPreview = ({ room, host, selectedDate, selectedMovies, currentUserId, onDelete }: RoomPreviewProps) => {
-    const isHost = host.id === currentUserId;
+const RoomPreview = ({ room, host, selectedDate, selectedMovies, currentUserId, participants, onDelete }: RoomPreviewProps) => {
+    const isHost = Boolean(host && currentUserId && host.id === currentUserId);
     const supabase = createClient();
     const [deleting, setDeleting] = useState(false);
 
@@ -49,7 +50,7 @@ const RoomPreview = ({ room, host, selectedDate, selectedMovies, currentUserId, 
 
             <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5">
                 <span className="vhs-badge text-text-light">
-                    HOST: {host.username}
+                    HOST: {host?.username ?? "NIEZNANY"}
                 </span>
 
                 {room.venue && (
@@ -67,7 +68,15 @@ const RoomPreview = ({ room, host, selectedDate, selectedMovies, currentUserId, 
                 <span className={`vhs-badge ${selectedDate ? "text-neon-blue" : "text-[#333360]"}`}>
                     📅 {selectedDate ? `Ostateczna data: ${new Date(selectedDate.date).toLocaleDateString('pl-PL')}` : "Brak daty"}
                 </span>
+                <span className={`hidden sm:block vhs-badge ${participants > 0 ? "text-neon-lime" : "text-[#333360]"}`}>
+                    👥 {participants} {participants === 1 ? "osoba" : participants === 2 || participants === 3 || participants === 4 ? "osoby" : "osób"}
+                </span>
             </div>
+
+            <span className={`sm:hidden mr-30 vhs-badge ${participants > 0 ? "text-neon-lime" : "text-[#333360]"}`}>
+                👥 {participants} {participants === 1 ? "osoba" : participants === 2 || participants === 3 || participants === 4 ? "osoby" : "osób"}
+            </span>
+
         </div>
 
         <div className="flex shrink-0 flex-col gap-2">

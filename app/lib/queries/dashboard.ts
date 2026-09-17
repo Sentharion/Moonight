@@ -6,6 +6,7 @@ export interface DashboardRoom {
     host: User;
     selectedMovies: SelectedMovie[];
     selectedDate: DateProposal | null;
+    participants:number,
 }
 
 /**
@@ -50,17 +51,19 @@ export async function fetchDashboardRooms(
     const roomIds = allRooms.map((r) => r.id);
     const selectedDateIds = allRooms.map((r) => r.selected_date_id).filter(Boolean) as string[];
 
-    const [hostsResult, moviesResult, datesResult] = await Promise.all([
+    const [hostsResult, moviesResult, datesResult,participantsResult] = await Promise.all([
         supabase.from("users").select("id,username,avatar,created_at").in("id", hostIds),
         supabase.from("selected_movies").select("room_id,movie_proposal_id,position").in("room_id", roomIds).order("position", { ascending: true }),
         selectedDateIds.length > 0
             ? supabase.from("date_proposals").select("*").in("id", selectedDateIds)
             : Promise.resolve({ data: [], error: null }),
+        supabase.from("movie_room_participants").select("room_id").in("room_id", roomIds),
     ]);
 
     if (hostsResult.error) console.error("fetchDashboardRooms — hosts error:", hostsResult.error);
     if (moviesResult.error) console.error("fetchDashboardRooms — movies error:", moviesResult.error);
     if (datesResult.error) console.error("fetchDashboardRooms — dates error:", datesResult.error);
+    if (participantsResult.error) console.error("fetchDashboardRooms — participants error:", participantsResult.error);
 
     const hostsById = Object.fromEntries((hostsResult.data ?? []).map((h) => [h.id, h]));
     const moviesByRoom = (moviesResult.data ?? []).reduce<Record<string, SelectedMovie[]>>((acc, m) => {
@@ -68,15 +71,24 @@ export async function fetchDashboardRooms(
         return acc;
     }, {});
     const datesById = Object.fromEntries((datesResult.data ?? []).map((d) => [d.id, d]));
+    const participantsByRoom = (participantsResult.data ?? []).reduce<Record<string, number>>((acc, participant) => {
+        acc[participant.room_id] = (acc[participant.room_id] ?? 0) + 1;
+        return acc;
+    }, {});
 
     return allRooms.flatMap((room) => {
-        const host = hostsById[room.host_id];
-        if (!host) return [];
+        const host = hostsById[room.host_id] ?? {
+            id: room.host_id,
+            username: "Gospodarz",
+            avatar: undefined,
+            created_at: room.created_at,
+        };
         return [{
             room,
             host: host as User,
             selectedMovies: moviesByRoom[room.id] ?? [],
             selectedDate: room.selected_date_id ? (datesById[room.selected_date_id] as DateProposal ?? null) : null,
+            participants:participantsByRoom[room.id] ?? 0,
         }];
     });
 }
