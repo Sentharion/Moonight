@@ -8,6 +8,7 @@ import MoviePicker from "./MoviePicker";
 import { X } from "lucide-react";
 import { createClient } from "../../../../lib/supabase/client";
 import { useRoomData } from "../../RoomDataContext";
+import { useTheme } from "@/app/components/ThemeProvider";
 
 interface MovieVoteTabProps {
     inviteCode: string;
@@ -34,6 +35,8 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
     const [deleteMode, setDeleteMode] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
     const [actionError, setActionError] = useState("");
+    const { theme, toggleTheme } = useTheme();
+    const lightMode = theme === "light";
 
     const error = actionError || contextError;
 
@@ -206,7 +209,7 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-10">
-                <div className="vhs-badge animate-pulse text-neon-lime">
+                <div className="vhs-badge animate-pulse dark:text-neon-lime text-neon-purple">
                     ŁADOWANIE PROPOZYCJI FILMÓW...
                 </div>
             </div>
@@ -216,9 +219,9 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
     return (
         <section>
             <div className="mb-4">
-                <div className="font-russo uppercase text-[20px] tracking-[0.04em] text-white">
+                <div className="font-russo uppercase text-[20px] tracking-[0.04em] text-foreground">
                     Co{" "}
-                    <span className="text-neon-lime drop-shadow-[0_0_12px_#9eff2d]">
+                    <span className="dark:text-neon-lime text-neon-purple dark:drop-shadow-[0_0_12px_#9eff2d] drop-shadow-[0_0_12px_#bf5fff] drop-shadow-[0_0_12px_#bf5fff]">
                         oglądamy?
                     </span>
                 </div>
@@ -235,27 +238,25 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
             {/* Propose form */}
             <div className="mb-4">
                 <div className="mb-2 flex items-center justify-between">
-                    <span className={`uppercase vhs-badge ${deleteMode ? "text-red-500" : "text-neon-lime"}`}>
+                    <span className={`uppercase vhs-badge ${deleteMode ? "text-red-500" : "dark:text-neon-lime text-neon-purple"}`}>
                         Propozycje filmów {deleteMode ? "(tryb usuwania)" : ""}
                     </span>
 
                     <div className="flex gap-2">
                         <button
                             onClick={() => setShowPropForm(!showPropForm)}
-                            className={`vhs-badge cursor-pointer rounded-sm border px-2.5 py-1 transition-all ${
-                                showPropForm
-                                    ? "border-neon-lime/35 bg-neon-lime/10 text-neon-lime hover:bg-neon-lime/15"
-                                    : "border-neon-lime/35 bg-transparent text-neon-lime hover:bg-neon-lime/10"
-                            }`}
+                            className={`vhs-badge cursor-pointer rounded-sm border px-2.5 py-1 transition-all ${showPropForm
+                                    ? "dark:border-neon-lime/35 bg-neon-lime/10 dark:text-neon-lime text-neon-purple dark:hover:bg-neon-lime/15 hover:border-neon-purple/35 hover:bg-neon-purple/10"
+                                    : "dark:border-neon-lime/35 bg-transparent dark:text-neon-lime text-neon-purple dark:hover:bg-neon-lime/10 hover:border-neon-purple/35 hover:bg-neon-purple/10"
+                                }`}
                         >
                             {showPropForm ? "✕ ANULUJ" : "+ DODAJ"}
                         </button>
                         {!showPropForm && isHost && (
                             <button
                                 onClick={toggleDeleteMode}
-                                className={`vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-red-500/20 border-red-500 bg-transparent text-red-500 ${
-                                    deleteMode ? "border-red-500/35 bg-red-500/10" : "border-red-500/35 bg-transparent"
-                                }`}
+                                className={`vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-red-500/20 border-red-500 bg-transparent text-red-500 ${deleteMode ? "border-red-500/35 bg-red-500/10" : "border-red-500/35 bg-transparent"
+                                    }`}
                             >
                                 ✕ Usuń
                             </button>
@@ -264,14 +265,14 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                 </div>
 
                 {showPropForm && (
-                    <div className="flex flex-col gap-2 rounded-sm border border-neon-lime/20 bg-[#0e0e1a] p-3">
+                    <div className="flex flex-col gap-2 rounded-sm border border-neon-lime/20 bg-card-bg dark:bg-[#0e0e1a] p-3">
                         <MoviePicker onSelectMovie={(movie) => setSelectedMovie(movie)} />
                         {selectedMovie && (
                             <button
                                 type="button"
                                 onClick={addProposition}
                                 disabled={actionLoading}
-                                className="vhs-badge rounded-sm border border-neon-lime/40 bg-neon-lime/10 px-3 py-2 text-neon-lime transition hover:bg-neon-lime/20 disabled:opacity-50"
+                                className="vhs-badge rounded-sm border border-neon-lime/40 bg-neon-lime/10 px-3 py-2 dark:text-neon-lime text-neon-purple transition hover:bg-neon-lime/20 disabled:opacity-50"
                             >
                                 + DODAJ FILM DO PROPOZYCJI
                             </button>
@@ -281,9 +282,9 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
             </div>
 
             {propositions.length === 0 ? (
-                <div className="flex flex-col items-center gap-3 rounded-sm border border-dashed border-border bg-[#0e0e1a] py-10">
+                <div className="flex flex-col items-center gap-3 rounded-sm border border-dashed border-border bg-card-bg dark:bg-[#0e0e1a] py-10">
                     <div className="text-[32px] opacity-30">🎬</div>
-                    <div className="vhs-badge text-center uppercase text-[#333360]">
+                    <div className="vhs-badge text-center uppercase text-text-light">
                         Nie ma propozycji filmów
                     </div>
                 </div>
@@ -297,13 +298,12 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                             <div
                                 key={p.id}
                                 onClick={() => handleVote(p.id)}
-                                className={`w-full overflow-hidden rounded-sm text-left transition-all duration-200 ${
-                                    picked
-                                        ? "border-2 border-neon-lime bg-neon-lime/10 shadow-[0_0_18px_#9eff2d40]"
+                                className={`w-full overflow-hidden rounded-sm text-left transition-all duration-200 ${picked
+                                        ? "border-2 dark:border-neon-lime border-neon-purple dark:bg-neon-lime/10 bg-neon-purple/10 shadow-[0_0_18px_#9eff2d40]"
                                         : leading && votedProp.length > 0
-                                        ? "border border-neon-lime/25 bg-transparent"
-                                        : "border border-transparent bg-transparent"
-                                } ${deleteMode ? "cursor-default" : "cursor-pointer"}`}
+                                            ? "border dark:border-neon-lime/25 border-neon-purple/25 bg-card-bg dark:bg-transparent"
+                                            : "border border-border bg-card-bg dark:bg-transparent"
+                                    } ${deleteMode ? "cursor-default" : "cursor-pointer"}`}
                             >
                                 <div className="flex items-stretch gap-0">
                                     {/* Poster */}
@@ -318,11 +318,10 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                                                 quality={90}
                                             />
                                         ) : (
-                                            <div className="flex min-h-30 w-22.5 items-center justify-center border-r border-border bg-[#12082a]">
+                                            <div className="flex min-h-30 w-22.5 items-center justify-center border-r border-border bg-card-bg dark:bg-[#12082a]">
                                                 <span
-                                                    className={`font-russo text-[28px] ${
-                                                        picked ? "text-neon-lime/40" : "text-neon-lime/20"
-                                                    }`}
+                                                    className={`font-russo text-[28px] ${picked ? "dark:text-neon-lime/40 text-neon-purple/40" : "dark:text-neon-lime/20 text-neon-purple/20"
+                                                        }`}
                                                 >
                                                     {p.title.slice(0, 1).toUpperCase()}
                                                 </span>
@@ -334,9 +333,8 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                                         <div className="mb-2 flex items-start justify-between gap-2">
                                             <div>
                                                 <span
-                                                    className={`font-barlow-condensed text-[18px] font-bold ${
-                                                        picked ? "text-neon-lime" : "text-[#e8e0ff]"
-                                                    }`}
+                                                    className={`font-barlow-condensed text-[18px] font-bold ${picked ? "dark:text-neon-lime text-neon-purple" : "text-foreground dark:text-[#e8e0ff]"
+                                                        }`}
                                                 >
                                                     {p.title}
                                                 </span>
@@ -348,7 +346,7 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
 
                                             <div className="flex shrink-0 items-center gap-1.5">
                                                 {leading && votedProp.length > 0 && (
-                                                    <span className="vhs-badge rounded-sm uppercase bg-neon-lime px-1.5 py-0.5 text-[#000]">
+                                                    <span className="vhs-badge rounded-sm uppercase dark:bg-neon-lime bg-neon-purple px-1.5 py-0.5 text-white dark:text-black">
                                                         Wygrywa
                                                     </span>
                                                 )}
@@ -365,7 +363,7 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                                                     </button>
                                                 )}
 
-                                                {picked && <span className="text-neon-lime">✓</span>}
+                                                {picked && <span className="dark:text-neon-lime text-neon-purple">✓</span>}
                                             </div>
                                         </div>
 
@@ -374,14 +372,13 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                                                 <Bar
                                                     val={p.votes}
                                                     max={maxProp || 1}
-                                                    color={picked ? "#b8ff00" : "#2a2a50"}
+                                                    color={(picked && lightMode) ? "#bf5fff" : (picked && !lightMode) ? "#b8ff00" : "#1a1a30"}
                                                 />
                                             </div>
 
                                             <span
-                                                className={`vhs-badge ${
-                                                    picked ? "text-neon-lime" : "text-text-light"
-                                                }`}
+                                                className={`vhs-badge ${picked ? "dark:text-neon-lime text-neon-purple" : "text-text-light"
+                                                    }`}
                                             >
                                                 {p.votes}
                                             </span>
@@ -395,7 +392,7 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
             )}
 
             {votedProp.length > 0 && (
-                <div className="mt-4 rounded-sm border border-neon-lime/10 bg-neon-lime/5 p-3 text-center vhs-badge text-neon-lime">
+                <div className="mt-4 rounded-sm border dark:border-neon-lime/10 border-neon-purple/10 bg-neon-purple/5 p-3 text-center vhs-badge dark:text-neon-lime text-neon-purple">
                     ZAGŁOSOWANO NA:{" "}
                     {propositions
                         .filter((p) => votedProp.includes(p.id))

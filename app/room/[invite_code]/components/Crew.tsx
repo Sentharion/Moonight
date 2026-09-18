@@ -32,7 +32,7 @@ const Crew = ({ crew, inviteCode,currentUserId }: CrewProps) => {
                     return (
                         <div
                             key={member.user_id}
-                            className={`flex items-center gap-2.5 rounded-sm border border-border ${isCurrentUser ? "border-neon-pink/40" : "border-border"} bg-[#0e0e1a] px-3 py-2`}
+                            className={`flex items-center gap-2.5 rounded-sm border border-border ${isCurrentUser ? "border-neon-pink/40" : "border-border"} bg-card-bg dark:bg-[#0e0e1a] px-3 py-2`}
                         >
                             {user.avatar ? (
                                 <Image

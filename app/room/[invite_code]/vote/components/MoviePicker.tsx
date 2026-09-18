@@ -81,7 +81,7 @@ const MoviePicker = ({ onSelectMovie }: MoviePickerProps) => {
             {!selectedMovie ? (
                 <div className="relative">
                     <label className="flex flex-col gap-2">
-                        <span className="font-['Russo_One'] text-[14px] font-bold uppercase tracking-[0.15em] text-white">
+                        <span className="font-['Russo_One'] text-[14px] font-bold uppercase tracking-[0.15em] text-foreground">
                             Znajdź film
                         </span>
 
@@ -92,18 +92,18 @@ const MoviePicker = ({ onSelectMovie }: MoviePickerProps) => {
                                 setQuery(e.target.value)
                             }
                             placeholder="Wpisz tytuł filmu..."
-                            className="rounded-sm border border-neon-lime/10 bg-[#0e0e1a] p-2 font-normal outline-none focus:border-neon-lime/70"
+                            className="rounded-sm border border-neon-lime/30 bg-input-bg dark:bg-[#0e0e1a] p-2 text-foreground dark:text-[#e8e0ff] font-normal outline-none focus:border-neon-lime/70"
                         />
                     </label>
 
                     {loading && (
-                        <div className="absolute z-50 mt-2 w-full rounded-sm border border-neon-lime/20 bg-[#0e0e1a] p-3 text-sm text-white/50">
+                        <div className="absolute z-50 mt-2 w-full rounded-sm border border-neon-lime/20 bg-card-bg dark:bg-[#0e0e1a] p-3 text-sm text-text-light">
                             Szukanie...
                         </div>
                     )}
 
                     {!loading && movies.length > 0 && (
-                        <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-sm border border-neon-lime/20 bg-[#0e0e1a]">
+                        <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-sm border border-neon-lime/20 bg-card-bg dark:bg-[#0e0e1a]">
                             {movies.map((movie) => (
                                 <button
                                     key={movie.imdbID}
@@ -111,7 +111,7 @@ const MoviePicker = ({ onSelectMovie }: MoviePickerProps) => {
                                     onClick={() =>
                                         handleSelectMovie(movie)
                                     }
-                                    className="flex w-full items-center gap-3 border-b border-white/5 p-2 text-left transition-colors hover:bg-white/5"
+                                    className="flex w-full items-center gap-3 border-b border-border p-2 text-left transition-colors hover:bg-neon-lime/10"
                                 >
                                     {movie.Poster &&
                                     movie.Poster !== "N/A" ? (
@@ -124,17 +124,17 @@ const MoviePicker = ({ onSelectMovie }: MoviePickerProps) => {
                                             className="h-16 w-11 shrink-0 rounded-sm object-cover"
                                         />
                                     ) : (
-                                        <div className="flex h-16 uppercase w-11 shrink-0 items-center justify-center rounded-sm bg-white/5 text-[9px] text-white/30">
+                                        <div className="flex h-16 uppercase w-11 shrink-0 items-center justify-center rounded-sm bg-border text-[9px] text-text-light">
                                             brak plakatu
                                         </div>
                                     )}
 
                                     <div className="min-w-0">
-                                        <p className="truncate font-['Russo_One'] text-sm text-white">
+                                        <p className="truncate font-['Russo_One'] text-sm text-foreground dark:text-white">
                                             {movie.Title}
                                         </p>
 
-                                        <p className="mt-1 text-xs text-white/50">
+                                        <p className="mt-1 text-xs text-text-light">
                                             {movie.Year}
                                         </p>
                                     </div>
@@ -146,13 +146,13 @@ const MoviePicker = ({ onSelectMovie }: MoviePickerProps) => {
                     {!loading &&
                         query.trim().length >= 2 &&
                         movies.length === 0 && (
-                            <div className="absolute z-50 mt-2 w-full rounded-sm border border-neon-lime/20 bg-[#0e0e1a] p-3 text-sm text-white/50">
+                            <div className="absolute z-50 mt-2 w-full rounded-sm border border-neon-lime/20 bg-card-bg dark:bg-[#0e0e1a] p-3 text-sm text-text-light">
                                 Nie znaleziono filmu.
                             </div>
                         )}
                 </div>
             ) : (
-                <div className="flex items-center gap-3 rounded-sm border border-neon-lime/20 bg-[#0e0e1a] p-2">
+                <div className="flex items-center gap-3 rounded-sm border border-neon-lime/20 bg-card-bg dark:bg-[#0e0e1a] p-2">
                     {selectedMovie.Poster &&
                     selectedMovie.Poster !== "N/A" ? (
                         <Image

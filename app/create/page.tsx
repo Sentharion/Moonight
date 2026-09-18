@@ -77,10 +77,10 @@ const CreatePage = () => {
 
 
     return (
-        <div className="flex min-h-full p-2 flex-col bg-[#080810]">
+        <div className="flex min-h-full p-2 flex-col bg-background">
             <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 overflow-y-auto px-4 sm:px-7 py-6 pb-6">
                 <div>
-                    <div className="font-['Russo_One'] uppercase text-[20px] tracking-[0.04em] text-white">
+                    <div className="font-['Russo_One'] uppercase text-[20px] tracking-[0.04em] text-foreground">
                         Utwórz nowy
                         <span className="text-neon-pink ml-2 [text-shadow:0_0_12px_#ff2d78]">
                              wieczór filmowy
@@ -119,13 +119,13 @@ const CreatePage = () => {
                             value={f.value}
                             onChange={(e) => f.onChange(e.target.value)}
                             placeholder={f.placeholder}
-                            className="w-full rounded-sm border border-border bg-[#0e0e1a] px-3 py-3 font-['Barlow'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880] focus:shadow-[0_0_10px_#ff2d7820]"
+                            className="w-full rounded-sm border border-border bg-input-bg dark:bg-[#0e0e1a] px-3 py-3 font-['Barlow'] text-[14px] text-foreground dark:text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-text-light focus:border-[#ff2d7880] focus:shadow-[0_0_10px_#ff2d7820]"
                         />
                     </div>
                 ))}
 
-                <button onClick={() => handleCreateNight()} disabled={!canLaunch} className={`w-full rounded-sm py-4 font-['Russo_One'] text-[15px] tracking-[0.08em] transition-all ${canLaunch ? "cursor-pointer border-2 border-neon-pink bg-[#ff2d7818] text-neon-pink shadow-[0_0_20px_#ff2d7840] hover:bg-[#ff2d7825]" : "cursor-not-allowed border border-[#1e1e38] bg-[#0e0e1a] text-[#333360]"}`}>
-                    ▶ UTWÓRZ WIECZÓR FILMOWY
+                <button onClick={() => handleCreateNight()} disabled={!canLaunch} className={`w-full rounded-sm py-4 font-['Russo_One'] text-[15px] tracking-[0.08em] transition-all ${canLaunch ? "cursor-pointer border-2 border-neon-pink bg-[#ff2d7818] text-neon-pink shadow-[0_0_20px_#ff2d7840] hover:bg-[#ff2d7825]" : "cursor-not-allowed border border-border bg-card-bg text-text-light dark:border-[#1e1e38] dark:bg-[#0e0e1a]"}`}>
+                    {loading ? "Tworzenie wieczoru filmowego...":"▶ UTWÓRZ WIECZÓR FILMOWY"}
                 </button>
             </div>
         </div>

@@ -60,7 +60,7 @@ const TopBar = () => {
   }, [pathname, supabase]);
 
   return (
-    <header className={`mt-1 bg-[#0a0a14] ${pathname === "/create" ? "border-b-2 border-neon-pink" : ""}`}>
+    <header className={`mt-1 bg-card-bg border-b border-border dark:bg-[#0a0a14] dark:border-transparent ${pathname === "/create" ? "border-b-2! border-neon-pink!" : ""}`}>
       <div className={`mx-auto flex max-w-7xl items-center gap-3 px-7 sm:px-7 py-3 sm:max-w-2xl sm:py-2 ${pathname === "/" ? "hidden" : "flex"}`}>
 
         <div className="glitch font-russo text-[22px] tracking-wider font-light text-neon-pink glow-pink sm:text-[24px]!">

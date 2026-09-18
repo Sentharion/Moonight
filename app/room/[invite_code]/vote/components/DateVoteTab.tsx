@@ -201,7 +201,7 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
     return (
         <section>
             <div className="mb-4">
-                <div className="font-russo uppercase text-[20px] tracking-[0.04em] text-white">
+                <div className="font-russo uppercase text-[20px] tracking-[0.04em] text-foreground">
                     Wybierz{" "}
                     <span className="text-neon-blue drop-shadow-[0_0_12px_#00e5ff]">
                         Termin
@@ -246,7 +246,7 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
                 </div>
 
                 {showDateForm && (
-                    <div className="flex flex-col justify-center gap-2 rounded-sm border border-neon-blue/20 bg-[#0e0e1a] p-3">
+                    <div className="flex flex-col justify-center gap-2 rounded-sm border border-neon-blue/20 bg-card-bg dark:bg-[#0e0e1a] p-3">
                         <div className="flex justify-center">
                             <DatePicker onAddDate={addDateProp} showDateForm={showDateForm} />
                         </div>
@@ -255,9 +255,9 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
             </div>
 
             {datePropList.length === 0 ? (
-                <div className="flex flex-col items-center gap-3 rounded-sm border border-dashed border-border bg-[#0e0e1a] py-8">
+                <div className="flex flex-col items-center gap-3 rounded-sm border border-dashed border-border bg-card-bg dark:bg-[#0e0e1a] py-8">
                     <div className="text-[28px] opacity-30">📅</div>
-                    <div className="vhs-badge uppercase text-center text-[#333360]">
+                    <div className="vhs-badge uppercase text-center text-text-light">
                         Nie ma propozycji dat
                     </div>
                 </div>
@@ -273,19 +273,19 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
                                 onClick={() => handleVote(d.id)}
                                 className={`w-full rounded-sm p-4 text-left transition-all duration-200 ${
                                     picked
-                                        ? "border-2 border-neon-blue bg-[#001a20] shadow-[0_0_18px_#00e5ff25]"
+                                        ? "border-2 border-neon-blue bg-cyan-500/10 dark:bg-[#001a20] shadow-[0_0_18px_#00e5ff25]"
                                         : leading && votedDate && !deleteMode
-                                        ? "border border-neon-blue/25 bg-[#0e0e1a]"
-                                        : "border border-border bg-[#0e0e1a]"
+                                        ? "border border-neon-blue/25 bg-card-bg dark:bg-[#0e0e1a]"
+                                        : "border border-border bg-card-bg dark:bg-[#0e0e1a]"
                                 } ${deleteMode ? "cursor-default" : "cursor-pointer"}`}
                             >
                                 <div className="mb-2.5 flex items-center justify-between">
                                     <div>
-                                        <span className={`font-mono text-[14px] ${picked ? "text-neon-blue" : "text-[#e8e0ff]"}`}>
+                                        <span className={`font-mono text-[14px] ${picked ? "text-neon-blue" : "text-foreground dark:text-[#e8e0ff]"}`}>
                                             {dateStringFormat(d.date)}
                                         </span>
 
-                                        <div className="vhs-badge mt-0.5 text-[#333360]">
+                                        <div className="vhs-badge mt-0.5 text-text-light">
                                             proponowane przez {d.proposer?.username}
                                         </div>
                                     </div>

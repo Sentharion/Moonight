@@ -17,7 +17,7 @@ const NavBar = ()=>{
                     const resolvedPath = item.path.replace('[inviteCode]',inviteCode ?? "");
                     const isActive = pathname === resolvedPath;
                     return (
-                        <Link key={item.id} href={resolvedPath} className={`flex items-center gap-2 py-3 text-center ${isRoom ? "px-15" : "px-8.5"} rounded-sm vhs-badge font-barlow! transition-all duration-150 ${isActive ? "bg-neon-pink/10! border-2 border-neon-pink text-neon-pink shadow-[0_0_14px_#ff2d7850]" : "bg-[#0e0e1a]! border border-[#1e1e38]! text-text-light! hover:border-neon-pink/30! hover:text-neon-pink hover:text-neon-pink/50!"}`}>
+                        <Link key={item.id} href={resolvedPath} className={`flex items-center gap-2 py-3 text-center ${isRoom ? "px-15" : "px-8.5"} rounded-sm vhs-badge font-barlow! transition-all duration-150 ${isActive ? "bg-neon-pink/10! border-2 border-neon-pink text-neon-pink shadow-[0_0_14px_#ff2d7850]" : "bg-card-bg! border border-border! text-text-light! hover:border-neon-pink/30! hover:text-neon-pink!"}`}>
                             {item.icon}
                             {item.label}
                         </Link>

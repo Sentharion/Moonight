@@ -30,8 +30,8 @@ const VotePage = () => {
                                 vt === voteTab
                                     ? voteTab === "dates"
                                         ? "bg-neon-blue/10 border-2 border-neon-blue text-neon-blue shadow-[0_0_12px_#00e5ff40]"
-                                        : "bg-neon-lime/10 border-2 border-neon-lime text-neon-lime shadow-[0_0_12px_#9eff2d40]"
-                                    : "bg-[#0e0e1a] border border-border text-text-light"
+                                        : "bg-neon-purple/10 border-2 border-neon-purple text-neon-purple dark:bg-neon-lime/10 dark:border-neon-lime dark:text-neon-lime shadow-[0_0_12px_#bf5fff40] dark:shadow-[0_0_12px_#9eff2d40]"
+                                    : "bg-card-bg border border-border text-text-light"
                             }`}
                         >
                             {label}

@@ -42,7 +42,7 @@ const RoomPreview = ({ room, host, selectedDate, selectedMovies, currentUserId, 
     }
     
     return (
-    <div key={room.id} className="flex items-center gap-4 min-w-0 rounded-sm border border-border bg-[#0e0e1a] p-4 transition-all duration-150 hover:border-[#ff2d7840] hover:shadow-[0_0_18px_#ff2d7818]">
+    <div key={room.id} className="flex items-center gap-4 min-w-0 rounded-sm border border-border bg-card-bg dark:bg-[#0e0e1a] p-4 transition-all duration-150 hover:border-[#ff2d7840] hover:shadow-[0_0_18px_#ff2d7818]">
         <div className="min-w-0 flex-1">
             <div className="truncate text-left font-russo text-[18px] font-normal leading-[1.2] tracking-[0.04em] text-neon-pink [text-shadow:0_0_10px_#ff2d7870]">
                 {room.title.toUpperCase()}
@@ -61,19 +61,19 @@ const RoomPreview = ({ room, host, selectedDate, selectedMovies, currentUserId, 
             </div>
 
             <div className="mt-1.5 flex gap-3">
-                <span className={`vhs-badge ${selectedMovies.length > 0 ? "text-neon-blue" : "text-[#333360]"}`}>
+                <span className={`vhs-badge ${selectedMovies.length > 0 ? "text-neon-blue" : "text-text-light"}`}>
                     🎬 {selectedMovies.length} {selectedMovies.length === 1 ? "film" : selectedMovies.length === 2 || selectedMovies.length === 3 || selectedMovies.length === 4 ? "filmy" : "filmów"}
                 </span>
 
-                <span className={`vhs-badge ${selectedDate ? "text-neon-blue" : "text-[#333360]"}`}>
+                <span className={`vhs-badge ${selectedDate ? "text-neon-blue" : "text-text-light"}`}>
                     📅 {selectedDate ? `Ostateczna data: ${new Date(selectedDate.date).toLocaleDateString('pl-PL')}` : "Brak daty"}
                 </span>
-                <span className={`hidden sm:block vhs-badge ${participants > 0 ? "text-neon-lime" : "text-[#333360]"}`}>
+                <span className={`hidden sm:block vhs-badge ${participants > 0 ? "text-neon-purple dark:text-neon-lime" : "text-text-light dark:text-text-light"}`}>
                     👥 {participants} {participants === 1 ? "osoba" : participants === 2 || participants === 3 || participants === 4 ? "osoby" : "osób"}
                 </span>
             </div>
 
-            <span className={`sm:hidden mr-30 vhs-badge ${participants > 0 ? "text-neon-lime" : "text-[#333360]"}`}>
+            <span className={`sm:hidden mr-30 vhs-badge ${participants > 0 ? "text-neon-purple dark:text-neon-lime" : "text-text-light dark:text-text-light"}`}>
                 👥 {participants} {participants === 1 ? "osoba" : participants === 2 || participants === 3 || participants === 4 ? "osoby" : "osób"}
             </span>
 

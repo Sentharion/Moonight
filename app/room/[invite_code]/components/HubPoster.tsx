@@ -54,7 +54,7 @@ const HubPoster = ({ room, host, crew, leading }: HubPosterProps) => {
             </div>
 
             {leading?.poster_url && (
-                <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-sm border border-[#ff2d7840] bg-[#080810cc] px-2 py-1">
+                <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-sm border border-[#ff2d7840] dark:bg-[#080810cc] bg-background px-2 py-1">
                     <span className="text-[10px] text-neon-pink">
                         ▶
                     </span>
