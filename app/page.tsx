@@ -41,7 +41,7 @@ export default function Home() {
     setRegisError("");
 
     const normalizedUser = regisName.trim().toLowerCase();
-    
+
 
     if (!normalizedUser) {
       setRegisError("⚠ Podaj nazwe użytkownika");
@@ -170,7 +170,7 @@ export default function Home() {
   const hasErrors = loginError || regisError
 
   return (
-    <div className="flex min-h-full flex-col items-center justify-center bg-background px-6">
+    <div className="flex min-h-screen pb-6 flex-col items-center justify-center bg-background px-6">
 
       <div className="flex w-full max-w-sm flex-col gap-7">
 
