@@ -5,6 +5,7 @@ import TopBar from "./components/TopBar";
 import NavBar from "./components/Navbar";
 import MobileNavbar from "./components/MobileNavbar";
 import Footer from "./components/Footer";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,17 +53,39 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="pl" 
+      lang="pl"
       className={`${geistSans.variable} ${geistMono.variable} ${russoOne.variable} ${barlow.variable} ${barlowCondensed.variable} ${shareTechMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-screen flex flex-1 flex-col">
-       <div className="scanlines flex flex-col h-full">
-        <TopBar />
-        <NavBar />
-        {children}
-        <MobileNavbar />
-        <Footer />
-       </div>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function() {
+              try {
+                var stored = localStorage.getItem('moonight-theme');
+                if (stored === 'light') {
+                  document.documentElement.classList.remove('dark');
+                } else {
+                  document.documentElement.classList.add('dark');
+                }
+              } catch (e) {
+                document.documentElement.classList.add('dark');
+              }
+            })();`,
+          }}
+        />
+      </head>
+      <body className="min-h-screen flex flex-1 flex-col bg-background text-foreground">
+        <ThemeProvider>
+          <div className="scanlines" />
+          <div className="flex flex-col min-h-screen flex-1">
+            <TopBar />
+            <NavBar />
+            {children}
+            <MobileNavbar />
+            <Footer />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

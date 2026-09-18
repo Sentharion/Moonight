@@ -7,10 +7,12 @@ import Image from "next/image";
 
 
 import { ensureUserProfile } from "../lib/queries/user";
+import { useTheme } from "../components/ThemeProvider";
 
 const ProfilePage = () => {
     const router = useRouter();
     const supabase = createClient();
+    const { theme, toggleTheme } = useTheme();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [username, setUsername] = useState("");
     const [avatar, setAvatar] = useState<string | null>(null);
@@ -210,7 +212,7 @@ const ProfilePage = () => {
     return (
         <div className="x-auto container mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 overflow-y-auto px-8 py-8 pb-22 sm:pb-8">
             <div>
-                <div className="font-['Russo_One'] text-[20px] tracking-[0.04em] uppercase text-white">
+                <div className="font-['Russo_One'] text-[20px] tracking-[0.04em] uppercase text-foreground">
                     Twój{" "}
                     <span className="text-neon-pink [text-shadow:0_0_12px_#ff2d78]">
                         profil
@@ -222,7 +224,7 @@ const ProfilePage = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col items-center gap-4 rounded-sm border-2 border-neon-pink/10 bg-[#0e0e1a] p-6 shadow-[0_0_24px_#ff2d7810]">
+            <div className="flex flex-col items-center gap-4 rounded-sm border-2 border-neon-pink/10 bg-card-bg dark:bg-[#0e0e1a] p-6 shadow-[0_0_24px_#ff2d7810]">
                 <div className="relative flex h-20 w-20 items-center justify-center rounded-sm border-2 border-neon-pink bg-gradient-to-br from-[#1a0a2e] to-[#2a0a1e] shadow-[0_0_20px_#ff2d7840]">
                     {displayedAvatar ? (
                         <Image
@@ -256,7 +258,7 @@ const ProfilePage = () => {
                             onChange={(e) => setUsernameDraft(e.target.value)}
                             placeholder="Twoje imię"
                             autoFocus
-                            className="flex-1 rounded-sm border border-neon-pink/30 bg-[#080810] px-3 py-2 font-['Barlow'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink"
+                            className="flex-1 rounded-sm border border-neon-pink/30 bg-input-bg dark:bg-[#080810] px-3 py-2 font-['Barlow'] text-[14px] text-foreground dark:text-[#e8e0ff] outline-none caret-neon-pink"
                             onKeyDown={(e) => {
                                 if (e.key === "Enter") {
                                     saveProfile();
@@ -285,7 +287,7 @@ const ProfilePage = () => {
                     </div>
                 ) : (
                     <div className="flex items-center gap-2">
-                        <div className="font-russo text-[18px] tracking-[0.04em] text-[#e8e0ff]">
+                        <div className="font-russo text-[18px] tracking-[0.04em] text-foreground dark:text-[#e8e0ff]">
                             {username || "Niezalogowany"}
                         </div>
 
@@ -297,6 +299,25 @@ const ProfilePage = () => {
                         </button>
                     </div>
                 )}
+            </div>
+            <div className="flex items-center justify-between rounded-sm border border-border bg-card-bg px-4 py-3 dark:border-border dark:bg-[#0e0e1a]">
+                <div>
+                    <div className="vhs-badge text-text-light uppercase">
+                        Tryb wyświetlania
+                    </div>
+
+                    <div className="mt-0.5 text-[13px] text-foreground">
+                        <span className="dark:hidden">Jasny</span>
+                        <span className="hidden dark:inline">Ciemny</span>
+                    </div>
+                </div>
+
+                <button
+                    onClick={toggleTheme}
+                    className="relative h-6.5 w-12 shrink-0 cursor-pointer rounded-sm border-2 border-neon-pink/50 bg-neon-pink transition-all duration-300 dark:border-border dark:bg-background"
+                >
+                    <span className="absolute top-0.5 left-0.5 h-4.5 w-4.5 rounded-sm bg-white transition-all duration-300 dark:left-6.5 dark:bg-neon-pink" />
+                </button>
             </div>
             <button onClick={logout} className="w-full cursor-pointer rounded-sm border border-[#ff2d7840] bg-transparent py-3.5 font-russo text-[13px] tracking-[0.08em] text-text-light transition-all duration-200 hover:border-neon-pink hover:text-neon-pink uppercase">⏏ Wyloguj się</button>
         </div>

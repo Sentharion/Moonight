@@ -93,7 +93,7 @@ const Dashboard = () => {
             ) : (
                 <>
                     <div className="relative">
-                        <div className="font-russo select-none text-[80px] leading-none tracking-[0.02em] text-[#1a1a30]">
+                        <div className="font-russo select-none text-[80px] leading-none tracking-[0.02em] text-border dark:text-[#1a1a30]">
                             ▶
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -104,7 +104,7 @@ const Dashboard = () => {
                     </div>
 
                     <div>
-                        <div className="font-russo text-[20px] uppercase sm:text-[26px] leading-[1.2] tracking-[0.04em] text-[#e8e0ff]">
+                        <div className="font-russo text-[20px] uppercase sm:text-[26px] leading-[1.2] tracking-[0.04em] text-foreground dark:text-[#e8e0ff]">
                             Brak zaplanowanego
                             <br />
                             <span className="text-neon-pink text-[20px] uppercase sm:text-[26px] [text-shadow:0_0_16px_#ff2d78]">

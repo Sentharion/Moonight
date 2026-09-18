@@ -170,7 +170,7 @@ export default function Home() {
   const hasErrors = loginError || regisError
 
   return (
-    <div className="flex min-h-full flex-col items-center justify-center bg-[#080810] px-6 scanlines">
+    <div className="flex min-h-full flex-col items-center justify-center bg-background px-6">
 
       <div className="flex w-full max-w-sm flex-col gap-7">
 
@@ -183,8 +183,8 @@ export default function Home() {
           </div>
         </div>
 
-        <div className={`flex flex-col gap-4 rounded-sm p-6 transition-all duration-200 ${loginError || regisError ? "border-2 border-neon-pink shadow-[0_0_24px_#ff2d7840]" : "border border-[#1e1e38]"} bg-[#0e0e1a]`}>
-          <div className={`vhs-badge mb-1 text-center ${hasErrors ? "text-neon-pink" : "text-cyan-300"}`} >
+        <div className={`flex flex-col gap-4 rounded-sm p-6 transition-all duration-200 ${loginError || regisError ? "border-2 border-neon-pink shadow-[0_0_24px_#ff2d7840]" : "border border-border dark:border-[#1e1e38]"} bg-card-bg dark:bg-[#0e0e1a]`}>
+          <div className={`vhs-badge mb-1 text-center ${hasErrors ? "text-neon-pink" : "text-neon-blue dark:text-cyan-300"}`} >
             {
               !register ? (
                 loginError ? loginError : "▶ Logowanie"
@@ -200,7 +200,7 @@ export default function Home() {
                   Adres e-mail
                 </div>
 
-                <input value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Adres e-mail" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Barlow'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]"
+                <input value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Adres e-mail" className="w-full rounded-sm border border-border dark:border-[#1e1e38] bg-input-bg dark:bg-[#080810] px-3 py-3 font-['Barlow'] text-[14px] text-foreground dark:text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-text-light focus:border-[#ff2d7880]"
                 />
               </div>
 
@@ -208,7 +208,7 @@ export default function Home() {
                 <div className="vhs-badge mb-2 uppercase text-text-light">
                   Hasło
                 </div>
-                <input type="password" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]" />
+                <input type="password" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-border dark:border-[#1e1e38] bg-input-bg dark:bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-foreground dark:text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-text-light focus:border-[#ff2d7880]" />
               </div>
 
               <button type="submit" className="vhs-badge uppercase mt-1 w-full cursor-pointer rounded-sm border-2 border-neon-pink bg-[#ff2d7818] py-4 font-['Russo_One'] text-[15px] tracking-[0.08em] text-neon-pink shadow-[0_0_20px_#ff2d7840] transition-all hover:bg-[#ff2d7825] hover:shadow-[0_0_25px_#ff2d7860]">
@@ -222,7 +222,7 @@ export default function Home() {
                   Nazwa użytkownika
                 </div>
 
-                <input value={regisName} onChange={(e) => setRegisName(e.target.value)} placeholder="Nazwa użytkownika" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Barlow'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]"
+                <input value={regisName} onChange={(e) => setRegisName(e.target.value)} placeholder="Nazwa użytkownika" className="w-full rounded-sm border border-border dark:border-[#1e1e38] bg-input-bg dark:bg-[#080810] px-3 py-3 font-['Barlow'] text-[14px] text-foreground dark:text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-text-light focus:border-[#ff2d7880]"
                 />
               </div>
 
@@ -230,14 +230,14 @@ export default function Home() {
                 <div className="vhs-badge mb-2 uppercase text-text-light">
                   Adres e-mail
                 </div>
-                <input type="email" value={regisEmail} onChange={(e) => setRegisEmail(e.target.value)} placeholder="Adres e-mail" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]" />
+                <input type="email" value={regisEmail} onChange={(e) => setRegisEmail(e.target.value)} placeholder="Adres e-mail" className="w-full rounded-sm border border-border dark:border-[#1e1e38] bg-input-bg dark:bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-foreground dark:text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-text-light focus:border-[#ff2d7880]" />
               </div>
 
               <div>
                 <div className="vhs-badge mb-2 uppercase text-text-light">
                   Hasło
                 </div>
-                <input type="password" value={regisPass} onChange={(e) => setRegisPass(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]" />
+                <input type="password" value={regisPass} onChange={(e) => setRegisPass(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-border dark:border-[#1e1e38] bg-input-bg dark:bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-foreground dark:text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-text-light focus:border-[#ff2d7880]" />
               </div>
 
 
@@ -245,7 +245,7 @@ export default function Home() {
                 <div className="vhs-badge mb-2 uppercase text-text-light">
                   Powtórz hasło
                 </div>
-                <input type="password" value={regisPassConf} onChange={(e) => setRegisPassConf(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-[#1e1e38] bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-[#333360] focus:border-[#ff2d7880]" />
+                <input type="password" value={regisPassConf} onChange={(e) => setRegisPassConf(e.target.value)} placeholder="••••••••" className="w-full rounded-sm border border-border dark:border-[#1e1e38] bg-input-bg dark:bg-[#080810] px-3 py-3 font-['Share_Tech_Mono'] text-[14px] text-foreground dark:text-[#e8e0ff] outline-none caret-neon-pink transition-all placeholder:text-text-light focus:border-[#ff2d7880]" />
               </div>
 
               <button type="submit" className="vhs-badge uppercase mt-1 w-full cursor-pointer rounded-sm border-2 border-neon-pink bg-[#ff2d7818] py-4 font-['Russo_One'] text-[15px] tracking-[0.08em] text-neon-pink shadow-[0_0_20px_#ff2d7840] transition-all hover:bg-[#ff2d7825] hover:shadow-[0_0_25px_#ff2d7860]">
@@ -258,7 +258,7 @@ export default function Home() {
           {!register ? (<div className="vhs-badge text-center text-text-light mt-1">Nie masz konta? <button onClick={handleSetRegister} className="text-neon-pink hover:text-neon-pink/70 cursor-pointer">Zarejestruj się</button></div>) : (<div className="vhs-badge text-center text-text-light mt-1">Masz konto? <button onClick={handleSetRegister} className="text-neon-pink hover:text-neon-pink/70 cursor-pointer">Zaloguj się</button></div>)}
         </div>
 
-        <div className="vhs-badge uppercase text-center text-[#1e1e38]">
+        <div className="vhs-badge uppercase text-center text-text-light">
           Stworzone przez Senthariona · v2.6
         </div>
 

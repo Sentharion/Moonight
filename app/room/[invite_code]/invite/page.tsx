@@ -9,7 +9,7 @@ const InvitePage = () => {
         <div className="flex-1 overflow-y-auto max-w-2xl mx-auto w-full px-4 sm:px-6 py-5 pb-24 sm:pb-5">
             <div className="flex flex-col gap-5">
                 <header>
-                    <div className="font-russo uppercase text-[20px] tracking-[0.04em] text-text">
+                    <div className="font-russo uppercase text-[20px] tracking-[0.04em] text-foreground">
                         Zaproś{" "}
                         <span className="text-neon-pink drop-shadow-[0_0_12px_#ff2d78]">
                             ekipę

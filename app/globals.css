@@ -1,32 +1,54 @@
 @import "tailwindcss";
 
 :root {
+  --background: #f4f4f8;
+  --foreground: #121225;
+  --card-bg: #ffffff;
+  --card-border: #e2e2ec;
+  --header-bg: #ffffff;
+  --text-light: #686888;
+  --border: #e2e2ec;
+  --input-bg: #ffffff;
+  --input-text: #121225;
+  --scanline-color: rgba(0, 0, 0, 0.03);
+}
+
+.dark {
   --background: #080810;
+  --foreground: #ededed;
+  --card-bg: #0e0e1a;
+  --card-border: #1e1e38;
+  --header-bg: #0a0a14;
+  --text-light: #555580;
+  --border: #1e1e38;
+  --input-bg: #080810;
+  --input-text: #e8e0ff;
+  --scanline-color: rgba(0, 0, 0, 0.08);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card-bg: var(--card-bg);
+  --color-card-border: var(--card-border);
+  --color-header-bg: var(--header-bg);
+  --color-text-light: var(--text-light);
+  --color-border: var(--border);
+  --color-input-bg: var(--input-bg);
+  --color-input-text: var(--input-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-neon-blue: #00e5ff;
-  --color-neon-pink:#ff2d78;
-  --color-neon-lime:#b8ff00;
-  --color-neon-purple:#bf5fff;
-  --color-text-light:#555580;
-  --color-border:#1e1e38;
+  --color-neon-pink: #ff2d78;
+  --color-neon-lime: #b8ff00;
+  --color-neon-purple: #bf5fff;
   --font-russo: var(--font-russo-one), "Russo One", sans-serif;
   --font-barlow: var(--font-barlow-custom), "Barlow", sans-serif;
   --font-barlow-condensed: var(--font-barlow-condensed-custom), "Barlow Condensed", sans-serif;
   --font-tech: var(--font-share-tech-mono), "Share Tech Mono", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #080810;
-    --foreground: #ededed;
-  }
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
 body {
   background: var(--background);
@@ -53,18 +75,32 @@ body {
     0 0 24px color-mix(in srgb, var(--color-neon-lime) 33%, transparent);
 }
 
-.border-neon-pink {
+@utility border-neon-pink {
   border-color: var(--color-neon-pink);
   box-shadow:
     0 0 12px color-mix(in srgb, var(--color-neon-pink) 25%, transparent),
     inset 0 0 12px color-mix(in srgb, var(--color-neon-pink) 3%, transparent);
 }
 
-.border-neon-blue {
+@utility border-neon-blue {
   border-color: var(--color-neon-blue);
   box-shadow:
     0 0 12px color-mix(in srgb, var(--color-neon-blue) 25%, transparent),
     inset 0 0 12px color-mix(in srgb, var(--color-neon-blue) 3%, transparent);
+}
+
+@utility border-neon-lime {
+  border-color: var(--color-neon-lime);
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--color-neon-lime) 25%, transparent),
+    inset 0 0 12px color-mix(in srgb, var(--color-neon-lime) 3%, transparent);
+}
+
+@utility border-neon-purple {
+  border-color: var(--color-neon-purple);
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--color-neon-purple) 25%, transparent),
+    inset 0 0 12px color-mix(in srgb, var(--color-neon-purple) 3%, transparent);
 }
 
 .vhs-badge {
@@ -112,12 +148,13 @@ body {
   position: fixed;
   inset: 0;
   z-index: 100;
+  pointer-events: none;
   background: repeating-linear-gradient(
     0deg,
     transparent,
     transparent 2px,
-    rgba(0,0,0,0.08) 2px,
-    rgba(0,0,0,0.08) 4px
+    var(--scanline-color) 2px,
+    var(--scanline-color) 4px
   );
 }
 

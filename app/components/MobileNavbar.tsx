@@ -16,7 +16,7 @@ const MobileNavbar = () => {
 
     return (
         <nav
-            className={`fixed bottom-0 left-0 right-0 z-50 border-t-2 border-neon-pink bg-[#0a0a14] shadow-[0_-4px_24px_#ff2d7820] sm:hidden ${
+            className={`fixed bottom-0 left-0 right-0 z-50 border-t-2 border-neon-pink bg-card-bg dark:bg-[#0a0a14] shadow-[0_-4px_24px_#ff2d7820] sm:hidden ${
                 pathname === "/" ? "hidden" : "flex"
             }`}
         >
@@ -42,7 +42,7 @@ const MobileNavbar = () => {
                             className={`text-[16px] leading-none ${
                                 active
                                     ? "text-neon-pink [text-shadow:0_0_8px_#ff2d78]"
-                                    : "text-[#333360]"
+                                    : "text-text-light"
                             }`}
                         >
                             {item.icon}
@@ -52,7 +52,7 @@ const MobileNavbar = () => {
                             className={`vhs-badge text-[9px] tracking-[0.12em] ${
                                 active
                                     ? "text-neon-pink"
-                                    : "text-[#333360]"
+                                    : "text-text-light"
                             }`}
                         >
                             {item.label}

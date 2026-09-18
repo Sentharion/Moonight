@@ -11,13 +11,13 @@ const CodeJoin = () => {
         setTimeout(() => setCopied(false), 2000);
     }
     return (
-        <section className="rounded-sm border border-border bg-background p-4">
+        <section className="rounded-sm border border-border bg-card-bg dark:bg-background p-4">
             <div className="vhs-badge mb-3 uppercase text-neon-blue">
                 Kod zaproszeniowy
             </div>
 
             <div className="flex gap-2">
-                <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-sm border border-border bg-background px-3 py-2.5 font-mono text-[11px] text-text-light">
+                <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-sm border border-border bg-input-bg dark:bg-background px-3 py-2.5 font-mono text-[11px] text-foreground dark:text-[#e8e0ff]">
                     {invite_code}
                 </div>
 
