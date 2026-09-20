@@ -111,17 +111,20 @@ const ProfilePage = () => {
 
     const saveProfile = async () => {
         const normalizedUser = usernameDraft.trim();
+        // Use Array.from() for proper emoji-aware character counting
+        // (JS .length counts UTF-16 code units; emojis are 2 units each)
+        const charCount = Array.from(normalizedUser).length;
 
         if (!normalizedUser) {
             setError("⚠ Nazwa użytkownika nie może być pusta");
             return;
         }
 
-        if (normalizedUser.length > 16) {
+        if (charCount > 16) {
             setError("⚠ Nazwa użytkownika musi mieć maksymalnie 16 znaków");
             return;
         }
-        if (normalizedUser.length < 3) {
+        if (charCount < 3) {
             setError("⚠ Nazwa użytkownika musi mieć co najmniej 3 znaki");
             return;
         }
@@ -239,10 +242,23 @@ const ProfilePage = () => {
                         </span>
                     )} {profileEditing && (
                         <>
-                            <button type="button" onClick={() => fileInputRef.current?.click()} className="absolute -bottom-2 -right-3 z-10 cursor-pointer rounded-full border border-neon-pink bg-gradient-to-br from-[#1a0a2e] to-[#2a0a1e] p-1.5 text-neon-pink shadow-[0_0_20px_#ff2d7840] transition-colors hover:bg-neon-pink hover:text-white" aria-label="Zmień avatar" >
+                            {/* Use <label> instead of programmatic .click() —
+                                iOS Safari PWA blocks non-user-gesture file input triggers in standalone mode */}
+                            <label
+                                htmlFor="avatar-upload"
+                                className="absolute -bottom-2 -right-3 z-10 cursor-pointer rounded-full border border-neon-pink bg-gradient-to-br from-[#1a0a2e] to-[#2a0a1e] p-1.5 text-neon-pink shadow-[0_0_20px_#ff2d7840] transition-colors hover:bg-neon-pink hover:text-white"
+                                aria-label="Zmień avatar"
+                            >
                                 <Pencil size={16} />
-                            </button>
-                            <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleAvatarChange} className="hidden" />
+                            </label>
+                            <input
+                                id="avatar-upload"
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/png,image/jpeg,image/webp"
+                                onChange={handleAvatarChange}
+                                className="hidden"
+                            />
                         </>)}
                 </div>
 
