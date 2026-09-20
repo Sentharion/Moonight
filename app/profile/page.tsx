@@ -87,6 +87,8 @@ const ProfilePage = () => {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        const maxSize = 5 * 1024 * 1024;
+
         // Accept all image formats — on iOS, Safari auto-converts HEIC to JPEG
         // before the File object is created, so we just verify it's any image type.
         if (!file.type.startsWith("image/")) {
