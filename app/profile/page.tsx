@@ -7,7 +7,7 @@ import Image from "next/image";
 
 
 import { ensureUserProfile } from "../lib/queries/user";
-import { useTheme } from "../components/ThemeProvider";
+import { useTheme } from "../providers/ThemeProvider";
 
 const ProfilePage = () => {
     const router = useRouter();

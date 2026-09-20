@@ -5,7 +5,8 @@ import TopBar from "./components/TopBar";
 import NavBar from "./components/Navbar";
 import MobileNavbar from "./components/MobileNavbar";
 import Footer from "./components/Footer";
-import { ThemeProvider } from "./components/ThemeProvider";
+import { ThemeProvider } from "./providers/ThemeProvider";
+import { AuthProvider } from "./providers/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -76,16 +77,18 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-1 flex-col bg-background text-foreground">
-        <ThemeProvider>
-          <div className="scanlines" />
-          <div className="flex flex-col min-h-screen flex-1">
-            <TopBar />
-            <NavBar />
-            {children}
-            <MobileNavbar />
-            <Footer />
-          </div>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <div className="scanlines" />
+            <div className="flex flex-col min-h-screen flex-1">
+              <TopBar />
+              <NavBar />
+              {children}
+              <MobileNavbar />
+              <Footer />
+            </div>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
