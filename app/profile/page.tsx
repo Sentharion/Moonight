@@ -87,11 +87,10 @@ const ProfilePage = () => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-        const maxSize = 5 * 1024 * 1024;
-
-        if (!validTypes.includes(file.type)) {
-            setError("⚠ Akceptowane formaty: JPG, PNG, WEBP");
+        // Accept all image formats — on iOS, Safari auto-converts HEIC to JPEG
+        // before the File object is created, so we just verify it's any image type.
+        if (!file.type.startsWith("image/")) {
+            setError("⚠ Plik musi być obrazem (JPG, PNG, WEBP, HEIC...)");
             return;
         }
 
@@ -255,7 +254,7 @@ const ProfilePage = () => {
                                 id="avatar-upload"
                                 ref={fileInputRef}
                                 type="file"
-                                accept="image/png,image/jpeg,image/webp"
+                                accept="image/*"
                                 onChange={handleAvatarChange}
                                 className="hidden"
                             />
