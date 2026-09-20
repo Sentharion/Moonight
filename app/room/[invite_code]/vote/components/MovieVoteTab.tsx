@@ -8,7 +8,7 @@ import MoviePicker from "./MoviePicker";
 import { X } from "lucide-react";
 import { createClient } from "../../../../lib/supabase/client";
 import { useRoomData } from "../../RoomDataContext";
-import { useTheme } from "@/app/components/ThemeProvider";
+import { useTheme } from "@/app/providers/ThemeProvider";
 
 interface MovieVoteTabProps {
     inviteCode: string;
@@ -246,8 +246,8 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                         <button
                             onClick={() => setShowPropForm(!showPropForm)}
                             className={`vhs-badge cursor-pointer rounded-sm border px-2.5 py-1 transition-all ${showPropForm
-                                    ? "dark:border-neon-lime/35 bg-neon-lime/10 dark:text-neon-lime text-neon-purple dark:hover:bg-neon-lime/15 hover:border-neon-purple/35 hover:bg-neon-purple/10"
-                                    : "dark:border-neon-lime/35 bg-transparent dark:text-neon-lime text-neon-purple dark:hover:bg-neon-lime/10 hover:border-neon-purple/35 hover:bg-neon-purple/10"
+                                ? "dark:border-neon-lime/35 bg-neon-lime/10 dark:text-neon-lime text-neon-purple dark:hover:bg-neon-lime/15 hover:border-neon-purple/35 hover:bg-neon-purple/10"
+                                : "dark:border-neon-lime/35 bg-transparent dark:text-neon-lime text-neon-purple dark:hover:bg-neon-lime/10 hover:border-neon-purple/35 hover:bg-neon-purple/10"
                                 }`}
                         >
                             {showPropForm ? "✕ ANULUJ" : "+ DODAJ"}
@@ -299,10 +299,10 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                                 key={p.id}
                                 onClick={() => handleVote(p.id)}
                                 className={`w-full overflow-hidden rounded-sm text-left transition-all duration-200 ${picked
-                                        ? "border-2 dark:border-neon-lime border-neon-purple dark:bg-neon-lime/10 bg-neon-purple/10 shadow-[0_0_18px_#9eff2d40]"
-                                        : leading && votedProp.length > 0
-                                            ? "border dark:border-neon-lime/25 border-neon-purple/25 bg-card-bg dark:bg-transparent"
-                                            : "border border-border bg-card-bg dark:bg-transparent"
+                                    ? "border-2 dark:border-neon-lime border-neon-purple dark:bg-neon-lime/10 bg-neon-purple/10 shadow-[0_0_18px_#9eff2d40]"
+                                    : leading && votedProp.length > 0
+                                        ? "border dark:border-neon-lime/25 border-neon-purple/25 bg-card-bg dark:bg-transparent"
+                                        : "border border-border bg-card-bg dark:bg-transparent"
                                     } ${deleteMode ? "cursor-default" : "cursor-pointer"}`}
                             >
                                 <div className="flex items-stretch gap-0">

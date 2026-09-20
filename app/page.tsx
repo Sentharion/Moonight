@@ -1,11 +1,13 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "./lib/supabase/client";
 
 import { ensureUserProfile } from "./lib/queries/user";
+import { useAuth } from "./providers/AuthProvider";
 
 export default function Home() {
+  const {session, loading: authLoading} = useAuth();
   const router = useRouter();
   const [loginUser, setLoginUser] = useState("");
   const [loginPass, setLoginPass] = useState("");
@@ -22,7 +24,31 @@ export default function Home() {
 
   const supabase = createClient();
   const normalizedRegisEmail = regisEmail.trim().toLowerCase();
-  const normalizedLoginEmail = loginEmail.trim().toLowerCase();
+
+
+  useEffect(() => {
+    if (!authLoading && session) {
+      router.replace("/dashboard");
+    }
+  }, [session, authLoading, router]);
+
+  if (authLoading) {
+    return (
+      <div className="flex min-h-screen pb-6 flex-col items-center justify-center bg-background px-6">
+        <div className="flex w-full max-w-sm flex-col gap-7 items-center">
+          <div className="glitch font-russo text-[38px] tracking-[0.06em] text-neon-pink [text-shadow:0_0_16px_#ff2d78,0_0_48px_#ff2d7860] "> MOONIGHT</div>
+          <div className="vhs-badge text-text-light">
+            Logowanie...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (session) {
+    return null;
+  }
+
 
   const handleSetRegister = async () => {
     setRegister(!register)
@@ -168,6 +194,7 @@ export default function Home() {
 
 
   const hasErrors = loginError || regisError
+
 
   return (
     <div className="flex min-h-screen pb-6 flex-col items-center justify-center bg-background px-6">
