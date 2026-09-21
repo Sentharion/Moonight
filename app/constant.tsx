@@ -172,10 +172,10 @@ export interface MovieSearchResult {
 
 export interface ReelDBMovie {
     Title: string;
-    Year: string;
-    imdbID: string;
-    Type: "movie";
-    Poster: string;
+    Year?: string;
+    imdbID?: string;
+    Type?: "movie";
+    Poster?: string;
 }
 
 export interface MovieRoomParticipantWithUser extends MovieRoomParticipant {
