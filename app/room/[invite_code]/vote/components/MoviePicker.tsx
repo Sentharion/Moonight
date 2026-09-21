@@ -30,6 +30,7 @@ const MoviePicker = ({ onSelectMovie }: MoviePickerProps) => {
     const [selectedType, setSelectedType] = useState<'search' | 'manual' | null>(null);
     const [propTitle, setPropTitle] = useState("");
     const [propPoster, setPropPoster] = useState("");
+    const [error,setError] = useState("");
 
     useEffect(() => {
         if (query.trim().length < 2) {
@@ -67,13 +68,20 @@ const MoviePicker = ({ onSelectMovie }: MoviePickerProps) => {
     }, [query]);
 
     const handleSelectMovie = (movie: ReelDBMovie) => {
+        if (!movie.Title) {
+            setError("Podaj tytuł filmu!");
+            return;
+        }
+
         setSelectedMovie(movie);
         setMovies([]);
         onSelectMovie(movie);
+        setError("");
     };
 
     const handleChangeMovie = () => {
         setSelectedMovie(null);
+        setError("");
         setQuery("");
         setMovies([]);
         onSelectMovie(null);
@@ -133,12 +141,15 @@ const MoviePicker = ({ onSelectMovie }: MoviePickerProps) => {
                             </label>
                         ) : (
                             <label className="flex flex-col gap-2">
+                               {error && <span className="ml-1 text-red-500">{error}</span>}
                                <div className="flex gap-2">
+                                
                                     <input
                                         value={propTitle}
                                         onChange={(e) => setPropTitle(e.target.value)}
                                         placeholder="Tytuł filmu"
-                                        className="flex-1 rounded-sm border border-border bg-input-bg px-3 py-2.5 font-barlow text-[13px] text-foreground dark:text-light-foreground dark:caret-neon-lime caret-neon-purple outline-none transition-colors focus:border-neon-purple/40 focus:dark:border-neon-lime/40"
+                                        required
+                                        className={`flex-1 rounded-sm border ${error ? "border-red-500" : "border-border"} bg-input-bg px-3 py-2.5 font-barlow text-[13px] text-foreground dark:text-light-foreground dark:caret-neon-lime caret-neon-purple outline-none transition-colors focus:border-neon-purple/40 focus:dark:border-neon-lime/40`}
                                     />
 
                                     <input
