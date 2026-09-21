@@ -2,14 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-
-export interface ReelDBMovie {
-    Title: string;
-    Year?: string;
-    imdbID?: string;
-    Type?: "movie";
-    Poster?: string;
-}
+import { ReelDBMovie } from "../../../../constant";
 
 interface ReelDBSearchResponse {
     Search?: ReelDBMovie[];
