@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 
 export interface ReelDBMovie {
     Title: string;
-    Year: string;
-    imdbID: string;
-    Type: "movie";
-    Poster: string;
+    Year?: string;
+    imdbID?: string;
+    Type?: "movie";
+    Poster?: string;
 }
 
 interface ReelDBSearchResponse {
@@ -27,6 +27,9 @@ const MoviePicker = ({ onSelectMovie }: MoviePickerProps) => {
     const [selectedMovie, setSelectedMovie] =
         useState<ReelDBMovie | null>(null);
     const [loading, setLoading] = useState(false);
+    const [selectedType, setSelectedType] = useState<'search' | 'manual' | null>(null);
+    const [propTitle, setPropTitle] = useState("");
+    const [propPoster, setPropPoster] = useState("");
 
     useEffect(() => {
         if (query.trim().length < 2) {
@@ -76,25 +79,81 @@ const MoviePicker = ({ onSelectMovie }: MoviePickerProps) => {
         onSelectMovie(null);
     };
 
+    const handleMovieTypeChange = (type: 'search' | 'manual') => {
+        setSelectedType(type);
+    }
+
     return (
         <div className="flex flex-col gap-3">
             {!selectedMovie ? (
                 <div className="relative">
-                    <label className="flex flex-col gap-2">
-                        <span className="font-['Russo_One'] text-[14px] font-bold uppercase tracking-[0.15em] text-foreground">
-                            Znajdź film
-                        </span>
+                    {
+                        !selectedType ? (
+                            <div className="flex flex-col gap-2">
+                                <span className="font-['Russo_One'] text-[14px] font-bold uppercase tracking-[0.15em] text-foreground">
+                                    Wybierz jak chcesz dodać film:
+                                </span>
 
-                        <input
-                            type="search"
-                            value={query}
-                            onChange={(e) =>
-                                setQuery(e.target.value)
-                            }
-                            placeholder="Wpisz tytuł filmu..."
-                            className="rounded-sm border border-neon-lime/30 bg-input-bg dark:bg-[#0e0e1a] p-2 text-foreground dark:text-[#e8e0ff] font-normal outline-none focus:border-neon-lime/70"
-                        />
-                    </label>
+                                <div className="flex gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            handleMovieTypeChange("search")
+                                        }
+                                        className="rounded-sm border vhs-badge flex-1 cursor-pointer border-neon-purple/30 dark:border-neon-lime/30 bg-input-bg bg-neon-purple/15 dark:bg-neon-lime/15 p-2 text-neon-purple dark:text-neon-lime font-normal outline-none hover:dark:bg-neon-lime/25 hover:bg-neon-purple/25  focus:dark:border-neon-lime/70 focus:border-neon-purple/70"
+                                    >
+                                        Przez wyszukiwarkę
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            handleMovieTypeChange("manual")
+                                        }
+                                        className="rounded-sm border vhs-badge flex-1 cursor-pointer border-neon-purple/30 dark:border-neon-lime/30 bg-neon-purple/15 dark:bg-neon-lime/15 p-2 text-neon-purple dark:text-neon-lime font-normal outline-none hover:dark:bg-neon-lime/25 hover:bg-neon-purple/25 focus:dark:border-neon-lime/70 focus:border-neon-purple/70"
+                                    >
+                                        Manualnie
+                                    </button>
+                                </div>
+                            </div>
+                        ) : selectedType === "search" ? (
+                            <label className="flex flex-col gap-2">
+                                <span className="font-['Russo_One'] text-[14px] font-bold uppercase tracking-[0.15em] text-foreground">
+                                    Tytuł filmu
+                                </span>
+
+                                <input
+                                    type="text"
+                                    value={query}
+                                    onChange={(e) =>
+                                        setQuery(e.target.value)
+                                    }
+                                    placeholder="Wpisz tytuł filmu..."
+                                    className="rounded-sm border dark:border-neon-lime/30 border-neon-purple/30 bg-input-bg dark:bg-[#0e0e1a] p-2 text-foreground dark:text-[#e8e0ff] font-normal outline-none focus:border-neon-lime/70 focus:border-neon-purple/70"
+                                />
+                            </label>
+                        ) : (
+                            <label className="flex flex-col gap-2">
+                               <div className="flex gap-2">
+                                    <input
+                                        value={propTitle}
+                                        onChange={(e) => setPropTitle(e.target.value)}
+                                        placeholder="Tytuł filmu"
+                                        className="flex-1 rounded-sm border border-border bg-input-bg px-3 py-2.5 font-barlow text-[13px] text-foreground dark:text-light-foreground dark:caret-neon-lime caret-neon-purple outline-none transition-colors focus:border-neon-purple/40 focus:dark:border-neon-lime/40"
+                                    />
+
+                                    <input
+                                    value={propPoster}
+                                    onChange={(e) => setPropPoster(e.target.value)}
+                                    placeholder="Adres URL Plakatu (opcjonalnie)"
+                                    className="w-full rounded-sm border border-border bg-input-bg px-3 py-2.5 font-barlow text-[13px] text-foreground dark:text-light-foreground dark:caret-neon-lime caret-neon-purple outline-none transition-colors focus:border-neon-purple/40 focus:dark:border-neon-lime/40"
+                                />
+                                </div>
+                                <button type="button" onClick={() => handleSelectMovie({ Title: propTitle, Poster: propPoster })} className="w-full rounded-sm border border-border bg-input-bg px-3 py-2.5 font-barlow text-[13px] text-foreground dark:text-neon-lime dark:caret-neon-lime caret-neon-purple outline-none transition-colors hover:dark:border-neon-lime/25 hover:border-neon-purple/35 focus:border-neon-purple/40 cursor-pointer uppercase focus:dark:border-neon-lime/40 focus:border-neon-purple/40">
+                                    Dodaj film
+                                </button>
+                            </label>
+                        )
+                    }
 
                     {loading && (
                         <div className="absolute z-50 mt-2 w-full rounded-sm border border-neon-lime/20 bg-card-bg dark:bg-[#0e0e1a] p-3 text-sm text-text-light">

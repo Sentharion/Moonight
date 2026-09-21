@@ -246,8 +246,8 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                         <button
                             onClick={() => setShowPropForm(!showPropForm)}
                             className={`vhs-badge cursor-pointer rounded-sm border px-2.5 py-1 transition-all ${showPropForm
-                                ? "dark:border-neon-lime/35 bg-neon-lime/10 dark:text-neon-lime text-neon-purple dark:hover:bg-neon-lime/15 hover:border-neon-purple/35 hover:bg-neon-purple/10"
-                                : "dark:border-neon-lime/35 bg-transparent dark:text-neon-lime text-neon-purple dark:hover:bg-neon-lime/10 hover:border-neon-purple/35 hover:bg-neon-purple/10"
+                                ? "dark:border-neon-lime/35 bg-neon-purple/10 dark:text-neon-lime text-neon-purple dark:hover:bg-neon-lime/15 hover:dark:border-neon-lime/35 hover:border-neon-purple/35 hover:bg-neon-purple/10"
+                                : "dark:border-neon-lime/35 bg-transparent dark:text-neon-lime text-neon-purple dark:hover:bg-neon-lime/10 hover:dark:border-neon-lime/35 hover:border-neon-purple/35 hover:bg-neon-purple/10"
                                 }`}
                         >
                             {showPropForm ? "✕ ANULUJ" : "+ DODAJ"}
@@ -265,7 +265,7 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
                 </div>
 
                 {showPropForm && (
-                    <div className="flex flex-col gap-2 rounded-sm border border-neon-lime/20 bg-card-bg dark:bg-[#0e0e1a] p-3">
+                    <div className="flex flex-col gap-2 rounded-sm border dark:border-neon-lime/20 border-neon-purple/20 bg-card-bg dark:bg-[#0e0e1a] p-3">
                         <MoviePicker onSelectMovie={(movie) => setSelectedMovie(movie)} />
                         {selectedMovie && (
                             <button

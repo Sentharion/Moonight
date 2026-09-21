@@ -3,21 +3,21 @@ import type { NextConfig } from "next";
 import withSerwistInit from "@serwist/next";
 
 const withSerwist = withSerwistInit({
-    swSrc: "app/sw.ts",
-    swDest: "public/sw.js",
+  swSrc: "app/sw.ts",
+  swDest: "public/sw.js",
 });
 
 const nextConfig: NextConfig = {
   webpack: (config) => config,
-  images:{
+  images: {
     remotePatterns: [
       {
-        protocol:"https",
-        hostname:"fwcdn.pl",
+        protocol: "https",
+        hostname: "fwcdn.pl",
       },
       {
-        protocol:"https",
-        hostname:"image.tmdb.org",
+        protocol: "https",
+        hostname: "image.tmdb.org",
       },
       {
         protocol: "https",
@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "skomplikowane.pl",
+        hostname: "**",
       },
       {
         protocol: "https",
