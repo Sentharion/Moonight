@@ -59,7 +59,7 @@ const HubPoster = ({ room, host, crew, leading }: HubPosterProps) => {
                         ▶
                     </span>
 
-                    <span className="uppercase vhs-badge text-[9px] text-neon-pink">
+                    <span className="uppercase truncate max-w-[200px] sm:max-w-[350px] vhs-badge text-[9px] text-neon-pink">
                         Prowadzi: {leading.title.toUpperCase()}
                     </span>
                 </div>
