@@ -288,9 +288,9 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
 
             {error && <div className="mb-4 vhs-badge text-red-500">{error}</div>}
 
-            <div className="mb-4">
-                <div className="mb-2 flex items-center justify-between">
-                    <span className={`uppercase vhs-badge text-neon-blue ${deleteMode ? "text-red-500" : "text-neon-blue"}`}>
+            <div className="mb-3 sm:mb-4">
+                <div className="mb-2 flex items-center justify-start sm:justify-between">
+                    <span className={`hidden sm:flex uppercase vhs-badge text-neon-blue ${deleteMode ? "text-red-500" : "text-neon-blue"}`}>
                         Propozycje dat {deleteMode ? "(tryb usuwania)" : ""}
                     </span>
 
@@ -315,7 +315,7 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
                             </button>
                         )}
                         {!showDateForm && isHost && dateVotingActive && (
-                            <div className="flex gap-2">
+                            <div className="flex justify-center gap-2">
                                 <button
                                     onClick={toggleDeleteMode}
                                     className={`vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-red-500/20 border-red-500 bg-transparent text-red-500 ${deleteMode ? "border-red-500/35 bg-red-500/10" : "border-red-500/35 bg-transparent"
@@ -328,6 +328,8 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
                     </div>
                 </div>
 
+
+
                 {showDateForm && (
                     <div className="flex flex-col justify-center gap-2 rounded-sm border border-neon-blue/20 bg-card-bg dark:bg-[#0e0e1a] p-3">
                         <div className="flex justify-center">
@@ -336,6 +338,10 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
                     </div>
                 )}
             </div>
+
+            <span className={`sm:hidden flex uppercase mb-1.5 vhs-badge text-neon-blue ${deleteMode ? "text-red-500" : "text-neon-blue"}`}>
+                Propozycje dat {deleteMode ? "(tryb usuwania)" : ""}
+            </span>
 
             {
                 !dateVotingActive ?
