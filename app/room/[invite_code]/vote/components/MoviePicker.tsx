@@ -129,7 +129,7 @@ const MoviePicker = ({ onSelectMovie }: MoviePickerProps) => {
                                         setQuery(e.target.value)
                                     }
                                     placeholder="Wpisz tytuł filmu..."
-                                    className="rounded-sm border dark:border-neon-lime/30 border-neon-purple/30 bg-input-bg dark:bg-[#0e0e1a] p-2 text-foreground dark:text-[#e8e0ff] font-normal outline-none focus:border-neon-lime/70 focus:border-neon-purple/70"
+                                    className="rounded-sm border dark:border-neon-lime/30 border-neon-purple/30 bg-input-bg dark:bg-[#0e0e1a] p-2 text-foreground dark:text-[#e8e0ff] font-normal outline-none focus:dark:border-neon-lime/70 focus:border-neon-purple/70"
                                 />
                             </label>
                         ) : (

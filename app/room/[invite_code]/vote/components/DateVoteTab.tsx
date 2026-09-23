@@ -33,6 +33,7 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
     const [deleteMode, setDeleteMode] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
     const [actionError, setActionError] = useState("");
+    const [voteEnd, setVoteEnd] = useState(false);
 
     const maxDateProp = datePropList.length > 0 ? Math.max(...datePropList.map((d) => d.votes)) : 0;
     const error = actionError || contextError;
@@ -188,6 +189,11 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
         setDeleteMode((prev) => !prev);
     };
 
+    const endVote = () =>{
+        if (!isHost) return;
+        setVoteEnd((prev) => !prev);
+    }
+
     if (loading) {
         return (
             <div className="flex items-center justify-center py-10">
@@ -233,14 +239,21 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
                             {showDateForm ? "✕ Anuluj" : "+ Dodaj"}
                         </button>
                         {!showDateForm && isHost && (
-                            <button
-                                onClick={toggleDeleteMode}
-                                className={`vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-red-500/20 border-red-500 bg-transparent text-red-500 ${
-                                    deleteMode ? "border-red-500/35 bg-red-500/10" : "border-red-500/35 bg-transparent"
-                                }`}
-                            >
-                                ✕ Usuń
-                            </button>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={endVote}
+                                    className="vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-neon-blue/15 border-neon-blue bg-transparent text-neon-blue">
+                                    {voteEnd ? "Wznów głosowanie" : "Zakończ głosowanie"}
+                                </button>
+                                <button
+                                    onClick={toggleDeleteMode}
+                                    className={`vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-red-500/20 border-red-500 bg-transparent text-red-500 ${
+                                        deleteMode ? "border-red-500/35 bg-red-500/10" : "border-red-500/35 bg-transparent"
+                                    }`}
+                                >
+                                    ✕ Usuń
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>

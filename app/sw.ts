@@ -28,10 +28,20 @@ const serwist = new Serwist({
     runtimeCaching: [
         ...defaultCache,
 
-        // Obrazki
+        // Supabase / API — always network, MUST be before the image rule below
+        // so that avatar images served from *.supabase.co are not intercepted
+        // by CacheFirst and served stale after an upload.
         {
-            matcher({ request }) {
-                return request.destination === "image";
+            matcher({ url }) {
+                return url.hostname.endsWith("supabase.co");
+            },
+            handler: new NetworkOnly(),
+        },
+
+        // Obrazki (non-Supabase)
+        {
+            matcher({ request, url }) {
+                return request.destination === "image" && !url.hostname.endsWith("supabase.co");
             },
             handler: new CacheFirst({
                 cacheName: "moonight-images",
@@ -58,13 +68,6 @@ const serwist = new Serwist({
             }),
         },
 
-        // Supabase / API — zawsze sieć
-        {
-            matcher({ url }) {
-                return url.hostname.endsWith("supabase.co");
-            },
-            handler: new NetworkOnly(),
-        },
     ],
 });
 

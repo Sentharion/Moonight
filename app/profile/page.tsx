@@ -61,7 +61,10 @@ const ProfilePage = () => {
             }
 
             setUsername(profile?.username ?? "");
-            setAvatar(profile?.avatar ?? null);
+            // Strip any stale ?v= cache-buster saved by old code, then add a fresh one for display
+            const rawAvatar = profile?.avatar ?? null;
+            const cleanAvatar = rawAvatar ? rawAvatar.split("?")[0] : null;
+            setAvatar(cleanAvatar ? `${cleanAvatar}?v=${Date.now()}` : null);
             setLoading(false);
         };
         loadProfile();
@@ -104,10 +107,14 @@ const ProfilePage = () => {
         setError("");
         setAvatarFile(file);
 
-        const previewUrl = URL.createObjectURL(file);
-        setAvatarDraft(previewUrl);
-
-
+        // Revoke the previous blob URL before creating a new one to prevent memory leaks.
+        // blob: URLs are only valid in the same browser session; they don't survive
+        // iOS PWA background suspensions, but that's fine — we only need them for the
+        // local preview before the upload completes.
+        setAvatarDraft(prev => {
+            if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
+            return URL.createObjectURL(file);
+        });
     }
 
     const saveProfile = async () => {
@@ -143,10 +150,11 @@ const ProfilePage = () => {
         }
 
         let avatarUrl = avatar;
+        let displayAvatarUrl = avatarUrl;
 
         if (avatarFile) {
 
-            const filePath = `${user.id}/avatar.jpg`;
+            const filePath = `${user.id}/avatar`;
 
             const { error: uploadError } = await supabase.storage
                 .from("avatars")
@@ -164,7 +172,9 @@ const ProfilePage = () => {
             }
 
             const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
-            avatarUrl = `${publicUrl}?v=${Date.now()}`;
+            // Store the clean URL in DB; append cache-buster only for local display
+            avatarUrl = publicUrl;
+            displayAvatarUrl = `${publicUrl}?v=${Date.now()}`;
         }
 
         const { error: updateError } = await supabase
@@ -184,8 +194,8 @@ const ProfilePage = () => {
         }
 
         setUsername(normalizedUser)
-        setAvatar(avatarUrl);
-        setAvatarDraft(avatarUrl);
+        setAvatar(displayAvatarUrl);
+        setAvatarDraft(displayAvatarUrl);
         setAvatarFile(null);
         setProfileEditing(false);
         setSaving(false);
@@ -231,12 +241,23 @@ const ProfilePage = () => {
             <div className="flex flex-col items-center gap-4 rounded-sm border-2 border-neon-pink/10 bg-card-bg dark:bg-[#0e0e1a] p-6 shadow-[0_0_24px_#ff2d7810]">
                 <div className="relative flex h-20 w-20 items-center justify-center rounded-sm border-2 border-neon-pink bg-gradient-to-br from-[#1a0a2e] to-[#2a0a1e] shadow-[0_0_20px_#ff2d7840]">
                     {displayedAvatar ? (
-                        <Image
-                            src={displayedAvatar}
-                            alt="Avatar"
-                            width={100}
-                            height={100}
-                            className="h-full w-full rounded-sm object-cover" />
+                        // Use a plain <img> for blob: preview URLs — Next.js <Image> routes
+                        // through the /_next/image optimizer which cannot resolve client-side
+                        // blob: URLs, causing a broken image on iOS PWA before the upload.
+                        displayedAvatar.startsWith("blob:") ? (
+                            <img
+                                src={displayedAvatar}
+                                alt="Avatar"
+                                className="h-full w-full rounded-sm object-cover"
+                            />
+                        ) : (
+                            <Image
+                                src={displayedAvatar}
+                                alt="Avatar"
+                                width={100}
+                                height={100}
+                                className="h-full w-full rounded-sm object-cover" />
+                        )
                     ) : (
                         <span className="font-russo text-[28px] text-neon-pink">
                             {initials}
