@@ -54,7 +54,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
         <div className="flex-1 overflow-y-auto max-w-2xl mx-auto w-full px-4 sm:px-6 py-5 pb-24 sm:pb-5">
             <HubPoster room={room} host={host} crew={crew} leading={leading} />
             <MoviePropositions movies={movies} inviteCode={invite_code} />
-            <DatePropositions dates={dates} inviteCode={invite_code} host={host}/>
+            <DatePropositions dates={dates} inviteCode={invite_code}/>
             <Crew crew={crew} inviteCode={invite_code} currentUserId={currentUserId} />
         </div>
     );
