@@ -51,6 +51,7 @@ export async function fetchDashboardRooms(
             created_at: roomData.created_at,
             host_id: roomData.host_id,
             selected_date_id: roomData.selected_date_id,
+            date_voting_active: roomData.date_voting_active,
         }];
     });
 

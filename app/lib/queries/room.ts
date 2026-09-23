@@ -36,7 +36,7 @@ export async function fetchRoomWithHost(
     // Step 1: Get the room record
     const { data: roomData, error: roomError } = await supabase
         .from("movie_room")
-        .select("id, title, venue, invite_code, created_at, host_id, selected_date_id")
+        .select("id, title, venue, invite_code, created_at, host_id, selected_date_id,date_voting_active")
         .eq("invite_code", inviteCode)
         .single();
 

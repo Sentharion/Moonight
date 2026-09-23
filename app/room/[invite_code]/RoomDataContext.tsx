@@ -15,11 +15,15 @@ interface RoomDataContextType {
     hostId: string | null;
     currentUserId: string | null;
     isHost: boolean;
+    dateVotingActive: boolean;
     movieProposals: MovieProposalWithUser[];
     votedMovies: string[];
     dateProposals: DateProposalWithUser[];
     votedDates: string[];
+    selectedDate: DateProposalWithUser | null;
     addMovieProposalState: (newMovie: MovieProposalWithUser) => void;
+    setDateVotingActiveState: React.Dispatch<React.SetStateAction<boolean>>;
+    setSelectedDateState: React.Dispatch<React.SetStateAction<DateProposalWithUser | null>>;
     removeMovieProposalState: (id: string) => void;
     setVotedMoviesState: React.Dispatch<React.SetStateAction<string[]>>;
     setMovieProposalsState: React.Dispatch<React.SetStateAction<MovieProposalWithUser[]>>;
@@ -46,6 +50,8 @@ export function RoomDataProvider({
     const [hostId, setHostId] = useState<string | null>(null);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [movieProposals, setMovieProposals] = useState<MovieProposalWithUser[]>([]);
+    const [dateVotingActive, setDateVotingActive] = useState(true);
+    const [selectedDate, setSelectedDate] = useState<DateProposalWithUser | null>(null);
     const [votedMovies, setVotedMovies] = useState<string[]>([]);
     const [dateProposals, setDateProposals] = useState<DateProposalWithUser[]>([]);
     const [votedDates, setVotedDates] = useState<string[]>([]);
@@ -77,11 +83,15 @@ export function RoomDataProvider({
                 return;
             }
 
+            const selectedDate = bundle.room.selected_date_id ? bundle.dateProposals.find((date) => date.id === bundle.room.selected_date_id) ?? null: null;
+
             setRoomId(bundle.room.id);
             setHostId(bundle.room.host_id);
+            setSelectedDate(selectedDate);
 
             setMovieProposals(bundle.movieProposals);
             setDateProposals(bundle.dateProposals);
+            setDateVotingActive(bundle.room.date_voting_active);
 
             setVotedMovies(bundle.movieVotedIds);
             setVotedDates(bundle.dateVotedIds);
@@ -129,8 +139,12 @@ export function RoomDataProvider({
                 votedMovies,
                 dateProposals,
                 votedDates,
+                dateVotingActive,
+                selectedDate,
                 addMovieProposalState,
                 removeMovieProposalState,
+                setDateVotingActiveState: setDateVotingActive,
+                setSelectedDateState: setSelectedDate,
                 setVotedMoviesState: setVotedMovies,
                 setMovieProposalsState: setMovieProposals,
                 addDateProposalState,

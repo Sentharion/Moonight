@@ -1,14 +1,15 @@
+import { dateStringFormat } from "@/app/utils/dateFormat";
 import { MovieRoom, User, MovieRoomParticipant, MovieProposal } from "../../../constant";
 import Image from "next/image";
-
 interface HubPosterProps {
     room: MovieRoom;
     host?: User | null;
     crew: MovieRoomParticipant[];
     leading: MovieProposal | null;
+    selectedDate: string | null;
 }
 
-const HubPoster = ({ room, host, crew, leading }: HubPosterProps) => {
+const HubPoster = ({ room, host, crew, leading, selectedDate }: HubPosterProps) => {
     return (
         <div className="relative h-50 overflow-hidden rounded-sm border-2 border-neon-pink shadow-[0_0_24px_#ff2d7830,inset_0_0_24px_#ff2d7808]">
             {leading?.poster_url ? (
@@ -34,7 +35,7 @@ const HubPoster = ({ room, host, crew, leading }: HubPosterProps) => {
 
                 <div className="mt-2 flex flex-wrap gap-4">
                     <span className="uppercase vhs-badge text-[10px]! sm:text-[12px]! text-neon-blue">
-                        📅 DATA TBD — GŁOSOWANIE
+                        {selectedDate ? `📅 DATA: ${dateStringFormat(selectedDate)}` : "📅 DATA TBD — GŁOSOWANIE"}
                     </span>
 
                     <span className="uppercase vhs-badge text-[10px]! sm:text-[12px]! text-neon-lime">

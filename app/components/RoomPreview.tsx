@@ -3,6 +3,7 @@ import { MovieRoom, User, SelectedMovie, DateProposal } from "../constant";
 import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "../lib/supabase/client";
+import { dateStringFormat } from "../utils/dateFormat";
 
 interface RoomPreviewProps {
     room: MovieRoom;
@@ -66,7 +67,7 @@ const RoomPreview = ({ room, host, selectedDate, selectedMovies, currentUserId, 
                 </span>
 
                 <span className={`vhs-badge ${selectedDate ? "text-neon-blue" : "text-text-light"}`}>
-                    📅 {selectedDate ? `Ostateczna data: ${new Date(selectedDate.date).toLocaleDateString('pl-PL')}` : "Brak daty"}
+                    📅 {selectedDate ? `Data: ${dateStringFormat(selectedDate.date)}` : "Brak daty"}
                 </span>
                 <span className={`hidden sm:block vhs-badge ${participants > 0 ? "text-neon-purple dark:text-neon-lime" : "text-text-light dark:text-text-light"}`}>
                     👥 {participants} {participants === 1 ? "osoba" : participants === 2 || participants === 3 || participants === 4 ? "osoby" : "osób"}
