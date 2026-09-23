@@ -60,6 +60,7 @@ export interface MovieRoom {
     created_at: string,
     host_id: string,
     selected_date_id: string | null
+    date_voting_active:boolean
 }
 
 export interface User {

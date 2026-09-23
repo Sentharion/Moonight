@@ -23,19 +23,25 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
         isHost,
         dateProposals: datePropList,
         votedDates: votedDate,
+        dateVotingActive,
+        selectedDate,
         addDateProposalState,
         removeDateProposalState,
         setVotedDatesState: setVotedDate,
         setDateProposalsState: setDatePropList,
+        reload,
+        setDateVotingActiveState,
+        setSelectedDateState,
     } = useRoomData();
 
     const [showDateForm, setShowDateForm] = useState(false);
     const [deleteMode, setDeleteMode] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
     const [actionError, setActionError] = useState("");
-    const [voteEnd, setVoteEnd] = useState(false);
 
     const maxDateProp = datePropList.length > 0 ? Math.max(...datePropList.map((d) => d.votes)) : 0;
+    const leadingDates = datePropList.filter((d) => d.votes === maxDateProp && d.votes > 0);
+
     const error = actionError || contextError;
 
     const addDateProp = async (date: Date, time: string) => {
@@ -96,7 +102,7 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
     };
 
     const handleVote = async (id: string) => {
-        if (deleteMode || !currentUserId || actionLoading) return;
+        if (deleteMode || !currentUserId || actionLoading || !dateVotingActive) return;
         setActionLoading(true);
         setActionError("");
 
@@ -189,10 +195,69 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
         setDeleteMode((prev) => !prev);
     };
 
-    const endVote = () =>{
-        if (!isHost) return;
-        setVoteEnd((prev) => !prev);
-    }
+    const endVote = async () => {
+        if (!isHost || actionLoading || !roomId || !currentUserId) return;
+
+        setActionLoading(true);
+        setActionError("");
+
+        try {
+            // ZAKOŃCZ GŁOSOWANIE
+            if (dateVotingActive) {
+                if (leadingDates.length !== 1) {
+                    setActionError(
+                        "⚠ Aby zakończyć głosowanie, musi być jeden zwycięski termin."
+                    );
+                    return;
+                }
+
+                const winningDate = leadingDates[0];
+
+                const { data, error } = await supabase
+                    .from("movie_room")
+                    .update({
+                        date_voting_active: false,
+                        selected_date_id: winningDate.id,
+                    })
+                    .eq("id", roomId)
+                    .select();
+
+                if (error || !data || data.length === 0) {
+                    console.error("Błąd przy kończeniu głosowania:", error, data);
+                    setActionError("⚠ Nie udało się zakończyć głosowania.");
+                    return;
+                }
+
+                // aktualizacja Contextu bez ponownego pobierania całego pokoju
+                setDateVotingActiveState(false);
+                setSelectedDateState(winningDate);
+
+                return;
+            }
+
+            // WZNÓW GŁOSOWANIE
+            const { data, error } = await supabase
+                .from("movie_room")
+                .update({
+                    date_voting_active: true,
+                    selected_date_id: null,
+                })
+                .eq("id", roomId)
+                .select();
+
+            if (error || !data || data.length === 0) {
+                console.error("Błąd przy wznawianiu głosowania:", error, data);
+                setActionError("⚠ Nie udało się wznowić głosowania.");
+                return;
+            }
+
+            setDateVotingActiveState(true);
+            setSelectedDateState(null);
+
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -230,26 +295,31 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
                     </span>
 
                     <div className="flex gap-2">
-                        <button
-                            onClick={() => setShowDateForm((v) => !v)}
-                            className={`vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-neon-blue/10 text-neon-blue transition-all ${
-                                showDateForm ? "border-neon-blue/35 bg-neon-blue/10" : "border-neon-blue/35 bg-transparent"
-                            }`}
-                        >
-                            {showDateForm ? "✕ Anuluj" : "+ Dodaj"}
-                        </button>
-                        {!showDateForm && isHost && (
-                            <div className="flex gap-2">
-                                <button 
+                        {
+                            isHost && (
+                                <button
                                     onClick={endVote}
-                                    className="vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-neon-blue/15 border-neon-blue bg-transparent text-neon-blue">
-                                    {voteEnd ? "Wznów głosowanie" : "Zakończ głosowanie"}
+                                    disabled={actionLoading || (dateVotingActive && leadingDates.length !== 1)}
+                                    className="vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-neon-blue/15 border-neon-blue bg-transparent text-neon-blue disabled:opacity-50 disabled:cursor-not-allowed">
+                                    {dateVotingActive ? "Zakończ głosowanie" : "Wznów głosowanie"}
                                 </button>
+                            )
+                        }
+                        {dateVotingActive && (
+                            <button
+                                onClick={() => setShowDateForm((v) => !v)}
+                                className={`vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-neon-blue/10 text-neon-blue transition-all ${showDateForm ? "border-neon-blue/35 bg-neon-blue/10" : "border-neon-blue/35 bg-transparent"
+                                    }`}
+                            >
+                                {showDateForm ? "✕ Anuluj" : "+ Dodaj"}
+                            </button>
+                        )}
+                        {!showDateForm && isHost && dateVotingActive && (
+                            <div className="flex gap-2">
                                 <button
                                     onClick={toggleDeleteMode}
-                                    className={`vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-red-500/20 border-red-500 bg-transparent text-red-500 ${
-                                        deleteMode ? "border-red-500/35 bg-red-500/10" : "border-red-500/35 bg-transparent"
-                                    }`}
+                                    className={`vhs-badge uppercase rounded-sm border px-2.5 py-1 cursor-pointer hover:bg-red-500/20 border-red-500 bg-transparent text-red-500 ${deleteMode ? "border-red-500/35 bg-red-500/10" : "border-red-500/35 bg-transparent"
+                                        }`}
                                 >
                                     ✕ Usuń
                                 </button>
@@ -267,81 +337,95 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
                 )}
             </div>
 
-            {datePropList.length === 0 ? (
-                <div className="flex flex-col items-center gap-3 rounded-sm border border-dashed border-border bg-card-bg dark:bg-[#0e0e1a] py-8">
-                    <div className="text-[28px] opacity-30">📅</div>
-                    <div className="vhs-badge uppercase text-center text-text-light">
-                        Nie ma propozycji dat
+            {
+                !dateVotingActive ?
+                    <div className="vhs-badge flex items-center gap-2 py-10 text-md! flex-col text-foreground">
+                        <span className="uppercase">Głosowanie zakończone</span>
+                        {selectedDate || leadingDates.length > 0 ? (
+                            <span className="text-neon-blue drop-shadow-[0_0_12px_#00e5ff]">
+                                Wybrana data to: {dateStringFormat((selectedDate || leadingDates[0]).date)}
+                            </span>
+                        ) : (
+                            <span className="text-text-light">
+                                Brak wybranej daty
+                            </span>
+                        )}
                     </div>
-                </div>
-            ) : (
-                <div className="flex flex-col gap-2.5">
-                    {datePropList.map((d) => {
-                        const picked = votedDate.includes(d.id);
-                        const leading = d.votes === maxDateProp && d.votes > 0;
-
-                        return (
-                            <div
-                                key={d.id}
-                                onClick={() => handleVote(d.id)}
-                                className={`w-full rounded-sm p-4 text-left transition-all duration-200 ${
-                                    picked
-                                        ? "border-2 border-neon-blue bg-cyan-500/10 dark:bg-[#001a20] shadow-[0_0_18px_#00e5ff25]"
-                                        : leading && votedDate && !deleteMode
-                                        ? "border border-neon-blue/25 bg-card-bg dark:bg-[#0e0e1a]"
-                                        : "border border-border bg-card-bg dark:bg-[#0e0e1a]"
-                                } ${deleteMode ? "cursor-default" : "cursor-pointer"}`}
-                            >
-                                <div className="mb-2.5 flex items-center justify-between">
-                                    <div>
-                                        <span className={`font-mono text-[14px] ${picked ? "text-neon-blue" : "text-foreground dark:text-[#e8e0ff]"}`}>
-                                            {dateStringFormat(d.date)}
-                                        </span>
-
-                                        <div className="vhs-badge mt-0.5 text-text-light">
-                                            proponowane przez {d.proposer?.username}
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-1.5">
-                                        {leading && votedDate !== null && !deleteMode && (
-                                            <span className="vhs-badge rounded-sm uppercase bg-neon-blue px-1.5 py-0.5 text-text-light">
-                                                Wygrywa
-                                            </span>
-                                        )}
-
-                                        {picked && <span className="text-neon-blue">✓</span>}
-
-                                        {deleteMode ? (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDeleteProp(d.id);
-                                                }}
-                                                className="vhs-badge uppercase rounded-sm border py-1 px-1.5 text-center cursor-pointer hover:bg-red-500/20 border-red-500 bg-transparent text-red-500"
-                                            >
-                                                <X size={12} />
-                                            </button>
-                                        ) : (
-                                            <span className={`vhs-badge ${picked ? "text-neon-blue" : "text-text-light"}`}>
-                                                {d.votes}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <Bar
-                                    val={d.votes}
-                                    max={maxDateProp || 1}
-                                    color={picked ? "#00e5ff" : "#1a1a40"}
-                                />
+                    :
+                    datePropList.length === 0 ? (
+                        <div className="flex flex-col items-center gap-3 rounded-sm border border-dashed border-border bg-card-bg dark:bg-[#0e0e1a] py-8">
+                            <div className="text-[28px] opacity-30">📅</div>
+                            <div className="vhs-badge uppercase text-center text-text-light">
+                                Nie ma propozycji dat
                             </div>
-                        );
-                    })}
-                </div>
-            )}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-2.5">
+                            {datePropList.map((d) => {
+                                const picked = votedDate.includes(d.id);
+                                const leading = d.votes === maxDateProp && d.votes > 0;
 
-            {votedDate.length > 0 && (
+                                return (
+                                    <div
+                                        key={d.id}
+                                        onClick={() => handleVote(d.id)}
+                                        className={`w-full rounded-sm p-4 text-left transition-all duration-200 ${picked
+                                                ? "border-2 border-neon-blue bg-cyan-500/10 dark:bg-[#001a20] shadow-[0_0_18px_#00e5ff25]"
+                                                : leading && votedDate && !deleteMode
+                                                    ? "border border-neon-blue/25 bg-card-bg dark:bg-[#0e0e1a]"
+                                                    : "border border-border bg-card-bg dark:bg-[#0e0e1a]"
+                                            } ${deleteMode ? "cursor-default" : "cursor-pointer"}`}
+                                    >
+                                        <div className="mb-2.5 flex items-center justify-between">
+                                            <div>
+                                                <span className={`font-mono text-[14px] ${picked ? "text-neon-blue" : "text-foreground dark:text-[#e8e0ff]"}`}>
+                                                    {dateStringFormat(d.date)}
+                                                </span>
+
+                                                <div className="vhs-badge mt-0.5 text-text-light">
+                                                    proponowane przez {d.proposer?.username}
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-1.5">
+                                                {leading && votedDate !== null && !deleteMode && (
+                                                    <span className="vhs-badge rounded-sm uppercase bg-neon-blue px-1.5 py-0.5 text-text-light">
+                                                        Wygrywa
+                                                    </span>
+                                                )}
+
+                                                {picked && <span className="text-neon-blue">✓</span>}
+
+                                                {deleteMode ? (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDeleteProp(d.id);
+                                                        }}
+                                                        className="vhs-badge uppercase rounded-sm border py-1 px-1.5 text-center cursor-pointer hover:bg-red-500/20 border-red-500 bg-transparent text-red-500"
+                                                    >
+                                                        <X size={12} />
+                                                    </button>
+                                                ) : (
+                                                    <span className={`vhs-badge ${picked ? "text-neon-blue" : "text-text-light"}`}>
+                                                        {d.votes}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <Bar
+                                            val={d.votes}
+                                            max={maxDateProp || 1}
+                                            color={picked ? "#00e5ff" : "#1a1a40"}
+                                        />
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+            {votedDate.length > 0 && dateVotingActive && (
                 <div className="mt-4 rounded-sm border border-neon-blue/25 bg-neon-blue/5 p-3 text-center vhs-badge text-neon-blue">
                     ZAGŁOSOWANO NA —{" "}
                     {datePropList

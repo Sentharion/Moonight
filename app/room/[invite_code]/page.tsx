@@ -5,6 +5,7 @@ import Crew from "./components/Crew";
 import { createClient } from "../../lib/supabase/server";
 import { fetchFullRoomBundle } from "../../lib/queries/room";
 import { ensureUserProfile } from "../../lib/queries/user";
+import { dateStringFormat } from "@/app/utils/dateFormat";
 
 interface RoomPageProps {
     params: Promise<{
@@ -43,16 +44,17 @@ export default async function RoomPage({ params }: RoomPageProps) {
         );
     }
 
-    const { room, host, crew, movieProposals: movies, dateProposals: dates } = bundle;
-    const isHost = Boolean(currentUserId && currentUserId === room.host_id);
+    const { room, host, crew, movieProposals: movies, dateProposals: dates} = bundle;
 
     const leading = movies.length > 0 ? movies.reduce(
         (prev, current) => (current.votes > prev.votes ? current : prev),
     ) : null;
 
+    const selectedDate = bundle.room.selected_date_id ? bundle.dateProposals.find((date) => date.id === bundle.room.selected_date_id) ?? null : null;
+
     return (
         <div className="flex-1 overflow-y-auto max-w-2xl mx-auto w-full px-4 sm:px-6 py-5 pb-24 sm:pb-5">
-            <HubPoster room={room} host={host} crew={crew} leading={leading} />
+            <HubPoster room={room} host={host} crew={crew} leading={leading} selectedDate={selectedDate?.date ?? null} />
             <MoviePropositions movies={movies} inviteCode={invite_code} />
             <DatePropositions dates={dates} inviteCode={invite_code}/>
             <Crew crew={crew} inviteCode={invite_code} currentUserId={currentUserId} />
