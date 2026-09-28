@@ -8,14 +8,14 @@ import { dateStringFormat } from "../utils/dateFormat";
 interface RoomPreviewProps {
     room: MovieRoom;
     host?: User | null;
-    selectedMovies: SelectedMovie[];
+    moviesProposalCount: number;
     selectedDate: DateProposal | null;
     currentUserId: string | null;
     participants: number
     onDelete: (room_id:string) => void;
 }
 
-const RoomPreview = ({ room, host, selectedDate, selectedMovies, currentUserId, participants, onDelete }: RoomPreviewProps) => {
+const RoomPreview = ({ room, host, selectedDate, moviesProposalCount, currentUserId, participants, onDelete }: RoomPreviewProps) => {
     const isHost = Boolean(host && currentUserId && host.id === currentUserId);
     const supabase = createClient();
     const [deleting, setDeleting] = useState(false);
@@ -62,8 +62,8 @@ const RoomPreview = ({ room, host, selectedDate, selectedMovies, currentUserId, 
             </div>
 
             <div className="mt-1.5 flex gap-3">
-                <span className={`vhs-badge ${selectedMovies.length > 0 ? "text-neon-blue" : "text-text-light"}`}>
-                    🎬 {selectedMovies.length} {selectedMovies.length === 1 ? "film" : selectedMovies.length === 2 || selectedMovies.length === 3 || selectedMovies.length === 4 ? "filmy" : "filmów"}
+                <span className={`vhs-badge ${moviesProposalCount > 0 ? "text-neon-blue" : "text-text-light"}`}>
+                    🎬 {moviesProposalCount} {moviesProposalCount === 1 ? "film" : moviesProposalCount === 2 || moviesProposalCount === 3 || moviesProposalCount === 4 ? "filmy" : "filmów"}
                 </span>
 
                 <span className={`vhs-badge ${selectedDate ? "text-neon-blue" : "text-text-light"}`}>
