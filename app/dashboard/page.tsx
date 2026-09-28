@@ -82,7 +82,7 @@ const Dashboard = () => {
                                 room={room.room}
                                 host={room.host}
                                 selectedDate={room.selectedDate}
-                                selectedMovies={room.selectedMovies}
+                                moviesProposalCount={room.movieProposalsCount}
                                 currentUserId={currentUserId}
                                 onDelete={handleDeleteRoom}
                                 participants={room.participants}
