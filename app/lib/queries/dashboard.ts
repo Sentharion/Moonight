@@ -6,8 +6,8 @@ export interface DashboardRoom {
     host: User;
     selectedMovies: SelectedMovie[];
     selectedDate: DateProposal | null;
-    participants:number,
-    movieProposalsCount:number;
+    participants: number,
+    movieProposalsCount: number;
 }
 
 interface ParticipantWithRoom {
@@ -33,7 +33,7 @@ export async function fetchDashboardRooms(
 ): Promise<DashboardRoom[]> {
     const { data: rawParticipants, error: participantsError } = await supabase
         .from("movie_room_participants")
-        .select("room_id,movie_room (id,title,venue,invite_code,created_at,host_id,selected_date_id)")
+        .select("room_id,movie_room (id,title,venue,invite_code,created_at,host_id,selected_date_id,date_voting_active)")
         .eq("user_id", userId);
 
     if (participantsError || !rawParticipants) {
@@ -68,21 +68,21 @@ export async function fetchDashboardRooms(
     const roomIds = allRooms.map((r) => r.id);
     const selectedDateIds = allRooms.map((r) => r.selected_date_id).filter(Boolean) as string[];
 
-    const [hostsResult, moviesResult, datesResult, participantsResult,movieProposalsResult] = await Promise.all([
+    const [hostsResult, moviesResult, datesResult, participantsResult, movieProposalsResult] = await Promise.all([
         supabase.from("users").select("id,username,avatar,created_at").in("id", hostIds),
         supabase.from("selected_movies").select("room_id,movie_proposal_id,position").in("room_id", roomIds).order("position", { ascending: true }),
         selectedDateIds.length > 0
             ? supabase.from("date_proposals").select("*").in("id", selectedDateIds)
             : Promise.resolve({ data: [], error: null }),
         supabase.from("movie_room_participants").select("room_id").in("room_id", roomIds),
-        supabase.from("movie_proposals").select("room_id").in("room_id",roomIds),
+        supabase.from("movie_proposals").select("room_id").in("room_id", roomIds),
     ]);
 
     if (hostsResult.error) console.error("fetchDashboardRooms — hosts error:", hostsResult.error);
     if (moviesResult.error) console.error("fetchDashboardRooms — movies error:", moviesResult.error);
     if (datesResult.error) console.error("fetchDashboardRooms — dates error:", datesResult.error);
     if (participantsResult.error) console.error("fetchDashboardRooms — participants error:", participantsResult.error);
-    if (movieProposalsResult.error) console.error("fetchDashboardRooms — movie proposals error:",movieProposalsResult.error);
+    if (movieProposalsResult.error) console.error("fetchDashboardRooms — movie proposals error:", movieProposalsResult.error);
 
     const hostsData = (hostsResult.data ?? []) as User[];
     const moviesData = (moviesResult.data ?? []) as SelectedMovie[];
@@ -101,7 +101,7 @@ export async function fetchDashboardRooms(
         return acc;
     }, {});
 
-    const movieProposalsByRoom = movieProposalsData.reduce<Record<string,number>>((acc,proposal)=>{
+    const movieProposalsByRoom = movieProposalsData.reduce<Record<string, number>>((acc, proposal) => {
         acc[proposal.room_id] = (acc[proposal.room_id] ?? 0) + 1;
         return acc;
     },
