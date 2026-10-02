@@ -71,4 +71,49 @@ const serwist = new Serwist({
     ],
 });
 
+self.addEventListener("push", (event) => {
+    if(!event.data) return;
+
+    try{
+        const data = event.data.json();
+        event.waitUntil(
+            self.registration.showNotification(data.title ?? "Moonight",
+            {
+                body: data.body ?? "",
+                icon: data.icon ?? "/icon-192.png",
+                badge: data.badge ?? "/icon-192.png",
+                data: {
+                    url: data.url ?? "/",
+                }
+            })
+        );
+    } catch (error){
+       console.error("Push notification error:", error);
+    }
+});
+
+self.addEventListener("notificationclick", (event) => {
+    event.notification.close();
+
+    const url = event.notification.data?.url ?? "/";
+
+    event.waitUntil(
+        self.clients.matchAll({
+            type:"window",
+            includeUncontrolled: true,
+        }).then((clients) => {
+            const existingClient = clients.find(
+                (client) => "focus" in client
+            );
+
+            if(existingClient){
+                existingClient.navigate(url);
+                return existingClient.focus();
+            }
+
+            return self.clients.openWindow(url);
+        })
+    )
+});
+
 serwist.addEventListeners();

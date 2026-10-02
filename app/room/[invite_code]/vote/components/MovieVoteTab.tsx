@@ -101,6 +101,25 @@ const MovieVoteTab = ({ inviteCode }: MovieVoteTabProps) => {
         setSelectedMovie(null);
         setShowPropForm(false);
         setActionLoading(false);
+        
+        try{
+            await fetch("/api/push/room", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    roomId,
+                    inviteCode,
+                    title: "Nowa propozycja filmu 🎬",
+                    message: `${newProposition.proposer?.username ?? "Ktoś"} dodał film „${newProposition.title}” do propozycji.`,
+                }),
+            });
+        }catch(error){
+            console.error("Błąd przy wysyłaniu powiadomienia:", error);
+            setActionError("⚠ Nie udało się wysłać powiadomienia.");
+        }
+
     };
 
     const handleVote = async (id: string) => {

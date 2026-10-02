@@ -66,6 +66,46 @@ const JoinPage = () => {
                     setLoading(false);
                     return;
                 }
+
+                const { data: profile } = await supabase
+                        .from("users")
+                        .select("username")
+                        .eq("id", user.id)
+                        .single();
+
+                try {
+                    const response = await fetch("/api/push/room", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            roomId: room.id,
+                            inviteCode,
+                            title: "Nowy uczestnik 🎬",
+                            message: `${profile?.username ?? "Ktoś"} dołączył do seansu.`,
+                        }),
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        console.error(
+                            "Błąd wysyłania powiadomienia o dołączeniu:",
+                            result
+                        );
+                    } else {
+                        console.log(
+                            "Push — nowy uczestnik:",
+                            result
+                        );
+                    }
+                } catch (pushError) {
+                    console.error(
+                        "Błąd requestu push o dołączeniu:",
+                        pushError
+                    );
+                }
             }
 
             router.push(`/room/${inviteCode}`);

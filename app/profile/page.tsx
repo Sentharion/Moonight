@@ -8,6 +8,7 @@ import Image from "next/image";
 
 import { ensureUserProfile } from "../lib/queries/user";
 import { useTheme } from "../providers/ThemeProvider";
+import PushNotifications from "../components/PushNotifications";
 
 const ProfilePage = () => {
     const router = useRouter();
@@ -223,6 +224,7 @@ const ProfilePage = () => {
         );
     }
 
+
     return (
         <div className="x-auto container mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 overflow-y-auto px-8 py-8 pb-22 sm:pb-8">
             <div>
@@ -357,6 +359,7 @@ const ProfilePage = () => {
                     <span className="absolute top-0.5 left-0.5 h-4.5 w-4.5 rounded-sm bg-white transition-all duration-300 dark:left-6.5 dark:bg-neon-pink" />
                 </button>
             </div>
+            <PushNotifications/>
             <button onClick={logout} className="w-full cursor-pointer rounded-sm border border-[#ff2d7840] bg-transparent py-3.5 font-russo text-[13px] tracking-[0.08em] text-text-light transition-all duration-200 hover:border-neon-pink hover:text-neon-pink uppercase">⏏ Wyloguj się</button>
         </div>
     );
