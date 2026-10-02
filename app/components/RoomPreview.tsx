@@ -1,5 +1,5 @@
 "use client"
-import { MovieRoom, User, SelectedMovie, DateProposal } from "../constant";
+import { MovieRoom, User, DateProposal } from "../constant";
 import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "../lib/supabase/client";

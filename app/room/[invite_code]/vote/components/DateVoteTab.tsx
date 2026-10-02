@@ -9,6 +9,7 @@ import { X } from "lucide-react";
 import { createClient } from "../../../../lib/supabase/client";
 import { useRoomData } from "../../RoomDataContext";
 
+
 interface DateVoteTabProps {
     inviteCode: string;
 }
@@ -99,6 +100,31 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
         addDateProposalState(newDate);
         setShowDateForm(false);
         setActionLoading(false);
+
+        try {
+            const response = await fetch("/api/push/room", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    roomId,
+                    inviteCode,
+                    title: "Nowa propozycja daty 📅",
+                    message: `${proposer?.username ?? "Użytkownik"} zaproponował nowy termin.`,
+                }),
+            });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            console.error("Błąd wysyłania powiadomienia:", result);
+        } else {
+            console.log("Push — nowa data:", result);
+        }
+        } catch (error) {
+            console.error("Błąd requestu push:", error);
+        }
     };
 
     const handleVote = async (id: string) => {
@@ -231,6 +257,31 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
                 // aktualizacja Contextu bez ponownego pobierania całego pokoju
                 setDateVotingActiveState(false);
                 setSelectedDateState(winningDate);
+
+                try {
+                    const response = await fetch("/api/push/room", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            roomId,
+                            inviteCode,
+                            title: "Głosowanie zakończone! 📅",
+                            message: `Wybrano termin: ${dateStringFormat(winningDate.date)}.`,
+                        }),
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        console.error("Błąd wysyłania powiadomienia:", result);
+                    } else {
+                        console.log("Push — nowa data:", result);
+                    }
+                } catch (error) {
+                    console.error("Błąd requestu push:", error);
+                }
 
                 return;
             }
@@ -376,10 +427,10 @@ const DateVoteTab = ({ inviteCode }: DateVoteTabProps) => {
                                         key={d.id}
                                         onClick={() => handleVote(d.id)}
                                         className={`w-full rounded-sm p-4 text-left transition-all duration-200 ${picked
-                                                ? "border-2 border-neon-blue bg-cyan-500/10 dark:bg-[#001a20] shadow-[0_0_18px_#00e5ff25]"
-                                                : leading && votedDate && !deleteMode
-                                                    ? "border border-neon-blue/25 bg-card-bg dark:bg-[#0e0e1a]"
-                                                    : "border border-border bg-card-bg dark:bg-[#0e0e1a]"
+                                            ? "border-2 border-neon-blue bg-cyan-500/10 dark:bg-[#001a20] shadow-[0_0_18px_#00e5ff25]"
+                                            : leading && votedDate && !deleteMode
+                                                ? "border border-neon-blue/25 bg-card-bg dark:bg-[#0e0e1a]"
+                                                : "border border-border bg-card-bg dark:bg-[#0e0e1a]"
                                             } ${deleteMode ? "cursor-default" : "cursor-pointer"}`}
                                     >
                                         <div className="mb-2.5 flex items-center justify-between">
