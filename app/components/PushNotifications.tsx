@@ -283,18 +283,16 @@ export default function PushNotifications() {
                         permission === "denied"
                     }
                     aria-label={subscribed ? "Wyłącz powiadomienia" : "Włącz powiadomienia"}
-                    className={`relative h-6.5 w-12 shrink-0 cursor-pointer rounded-sm border-border border-1 transition-all duration-300 bg-input-bg dark:bg-[#080810] disabled:opacity-50 disabled:cursor-not-allowed ${
-                        subscribed
-                            ? "bg-neon-pink"
-                            : ""
-                    }`}
+                    className={`relative h-6.5 w-12 shrink-0 cursor-pointer rounded-sm border-border border-1 transition-all duration-300 bg-input-bg dark:bg-[#080810] disabled:opacity-50 disabled:cursor-not-allowed ${subscribed
+                        ? "bg-neon-pink"
+                        : ""
+                        }`}
                 >
                     <span
-                        className={`absolute top-0.5 h-4.5 w-4.5 rounded-sm transition-all duration-300 ${
-                            subscribed
-                                ? "left-6.5 bg-neon-pink"
-                                : "left-0.5 bg-text-light/50"
-                        }`}
+                        className={`absolute top-0.5 h-4.5 w-4.5 rounded-sm transition-all duration-300 ${subscribed
+                            ? "left-6.5 dark:bg-neon-pink bg-white"
+                            : "left-0.5 bg-text-light/50"
+                            }`}
                     />
                 </button>
             </div>
